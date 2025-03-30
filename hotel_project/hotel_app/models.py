@@ -19,6 +19,7 @@ class room(models.Model):
     """
     Model representing a room in the hotel.
     """
+    id = models.AutoField(primary_key=True)
     room_number = models.CharField(max_length=10, unique=True)
     room_type = models.CharField(max_length=50)
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
