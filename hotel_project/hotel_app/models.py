@@ -40,3 +40,4 @@ class reservation(models.Model):
 
     def __str__(self):
         return f"Reservation by {self.client.name} for {self.room.room_number}"
+
