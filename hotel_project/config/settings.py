@@ -54,11 +54,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',    # Change to MySQL
+        'NAME': 'hotel_db',                      # Your database name
+        'USER': 'root',                          # Default XAMPP MySQL username
+        'PASSWORD': '',                          # Default XAMPP MySQL password (empty)
+        'HOST': 'localhost',                     # Keep as is
+        'PORT': '3306',                          # Keep as is
     }
 }
 
