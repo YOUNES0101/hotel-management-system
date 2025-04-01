@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     # Define your URL patterns here
     # For example:
-    path('hotel_project', views.home, name='home'),
+    path('', views.home, name='home'),
     # Add more paths as needed
 ]
 

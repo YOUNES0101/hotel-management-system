@@ -39,5 +39,5 @@ class reservation(models.Model):
     check_out_date = models.DateField()
 
     def __str__(self):
-        return f"Reservation by {self.client.name} for {self.room.room_number}"
+        return f"Reservation by ( {self.client.last_name} {self.client.first_name} ) for {self.room.room_number}"
 
