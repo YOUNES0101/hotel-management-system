@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import room, client, reservation
+from .models import room, client, reservation ,manager
 
 
 @admin.register(room)
@@ -20,3 +20,7 @@ class reservationAdmin(admin.ModelAdmin):
     search_fields = ('client__first_name', 'client__last_name', 'room__room_number')
     date_hierarchy = ('check_in_date')
 
+@admin.register(manager)
+class managerAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email' ,'phone_number')
+    search_fields = ('first_name', 'last_name', 'email')

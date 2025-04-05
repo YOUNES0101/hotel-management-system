@@ -6,7 +6,7 @@ class client(models.Model):
     """
     Model representing a client in the hotel management system.
     """
-    id = models.AutoField(primary_key=True)
+    client_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
@@ -40,15 +40,14 @@ class reservation(models.Model):
 
     def __str__(self):
         return f"Reservation by ( {self.client.last_name} {self.client.first_name} ) for {self.room.room_number}"
-    
-class employe(models.Model):
+
+class manager(models.Model):
     """
-    Model representing a client in the hotel management system.
+    Model representing a manager in the hotel management system.
     """
-    id = models.AutoField(primary_key=True)
+    manager_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    salaire = models.CharField()
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, unique=True)
 
