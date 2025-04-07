@@ -3,9 +3,7 @@ from django.db import models
 # Create your models here.
 
 class client(models.Model):
-    """
-    Model representing a client in the hotel management system.
-    """
+    
     client_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -17,9 +15,7 @@ class client(models.Model):
 
 
 class room(models.Model):
-    """
-    Model representing a room in the hotel.
-    """
+
     room_number = models.CharField(max_length=10, unique=True)
     room_type = models.CharField(max_length=50)
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
@@ -30,9 +26,7 @@ class room(models.Model):
 
 
 class reservation(models.Model):
-    """
-    Model representing a reservation made by a client.
-    """
+
     client = models.ForeignKey(client, on_delete=models.CASCADE)
     room = models.ForeignKey(room, on_delete=models.CASCADE)
     check_in_date = models.DateField()
@@ -42,9 +36,7 @@ class reservation(models.Model):
         return f"Reservation by ( {self.client.last_name} {self.client.first_name} ) for {self.room.room_number}"
 
 class manager(models.Model):
-    """
-    Model representing a manager in the hotel management system.
-    """
+
     manager_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
