@@ -5,3 +5,4 @@ from django.views import View
 
 def home_view(request):
     return render(request, 'hotel_app/home.html')
+
