@@ -17,6 +17,7 @@
                     {% csrf_token %}
                     <label for="username" class="form-label">Username</label>
                     <input
+                        placeholder="Username"
                         type="text"
                         id="username"
                         name="username"
@@ -25,13 +26,22 @@
                     />
                     <label for="password" class="form-label">Password</label>
                     <input
+                        placeholder="+6 characters"
                         type="password"
                         id="password"
                         name="password"
                         class="form-input"
                         required
                     />
+                    <div class="form-footer">
+                        <a>By signing in you agree to</a>
+                        <a href="#" class="terms">terms and conditions</a>
+                        <a class="logo_l"
+                            >at Horizon<span class="highlight">H</span></a
+                        >
+                    </div>
                     <button type="submit" class="form-button">Login</button>
+                    <a href="#" class="cr_acc">Sign</a>
                 </form>
             </div>
         </div>
