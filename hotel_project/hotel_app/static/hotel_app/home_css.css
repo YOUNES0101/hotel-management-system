@@ -24,18 +24,29 @@ body {
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 30px;
+    gap: 20px;
     align-items: center;
 }
 
 .nav-links li a {
     text-decoration: none;
     color: #333;
-    font-weight: 500;
+    font-weight: auto;
 }
 
-.login-btn {
-    background-color: #3C4FE0;
+
+.sign_up-btn {
+    background-color: hsl(60, 94%, 50%);
+    color: rgb(209, 16, 16);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-btn{
+    background-color: #adadad;
     color: white;
     border: none;
     padding: 10px 20px;

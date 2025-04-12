@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hotel_app',
-    'accounts',
+
     # Your app
 ]
 
@@ -62,8 +62,8 @@ DATABASES = {
         'NAME': 'hotel_db',                      # Your database name
         'USER': 'root',                          # Default XAMPP MySQL username
         'PASSWORD':'',                          # Default XAMPP MySQL password (empty)
-        'HOST': 'localhost',                     # Keep as is
-        'PORT': '3306',                          # Keep as is
+        'HOST':'localhost',                     # Keep as is
+        'PORT':'3306',                          # Keep as is
     }
 }
 
@@ -91,7 +91,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+AUTH_USER_MODEL = 'hotel_app.CustomUser'
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

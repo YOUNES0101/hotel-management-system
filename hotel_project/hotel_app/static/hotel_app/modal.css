@@ -1,0 +1,151 @@
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  .modal-content {
+    background-color: #fff;
+    margin: 10vh auto;
+    padding: 40px;
+    border-radius: 12px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    position: relative;
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-content h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+  }
+
+  /* Form styling */
+  .modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .modal-content p {
+    margin: 0;
+  }
+
+  .modal-content label {
+    display: block;
+    margin-bottom: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .modal-content input[type="text"],
+  .modal-content input[type="email"],
+  .modal-content input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .modal-content input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+
+  .modal-content .btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+  }
+
+  .modal-content .btn:hover {
+    background-color: #0069d9;
+  }
+
+  /* Error messages */
+  .errorlist {
+    color: #e74c3c;
+    font-size: 14px;
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 5px;
+    margin-bottom: 0;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+  }
+
+  /* Login link styling */
+  .modal-content .login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+  }
+
+  .modal-content .login-link a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .modal-content .login-link a:hover {
+    text-decoration: underline;
+  }
