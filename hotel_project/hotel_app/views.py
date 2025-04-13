@@ -2,13 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import View
 from .forms import CustomUserCreationForm
-
 from django.contrib import messages
 
 
-
-# def home_view(request):
-#     return render(request, 'hotel_app/home.html')
 
 
 def home_view(request):
