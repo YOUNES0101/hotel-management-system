@@ -224,13 +224,13 @@
     height: 280px;
     cursor: pointer;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition: transform 0.1s ease, box-shadow 0.4s ease;
     transform: scale(1);
   }
 
   /* Zoom-Out on Hover */
   .card:hover {
-    transform: scale(1.08);
+    transform: scale(0.2);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   }
 

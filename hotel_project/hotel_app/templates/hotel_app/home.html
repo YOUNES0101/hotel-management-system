@@ -70,6 +70,7 @@
         </div>
       </section>
 
+
       <section class="most-picked">
         <h2>Most Picked</h2>
         <div class="card-grid">
@@ -103,7 +104,7 @@
         <span class="close" id="closeSignupModal">&times;</span>
         <h2>Sign Up</h2>
         <!-- Signup form: make sure the form action URL maps to your signup view -->
-        <form method="post" action="{% url 'signup' %}">
+        <form method="post" action="{% url 'home' %}">
           {% csrf_token %}
           <!-- Render the form fields (errors included) -->
           {{ signup_form.as_p }}

@@ -1,0 +1,22 @@
+
+{% extends 'dashboard_app/base.html' %}
+
+{% block content %}
+<h1>Manage Rooms</h1>
+<table>
+    <tr>
+        <th>Room Number</th>
+        <th>Type</th>
+        <th>Price</th>
+        <th>Availability</th>
+    </tr>
+    {% for room in rooms %}
+    <tr>
+        <td>{{ room.room_number }}</td>
+        <td>{{ room.room_type }}</td>
+        <td>{{ room.price }}</td>
+        <td>{{ room.availability_status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

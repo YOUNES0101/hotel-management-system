@@ -1,0 +1,23 @@
+{% extends 'dashboard_app/base.html' %}
+
+{% block content %}
+<h1>Manage Reservations</h1>
+<table>
+    <tr>
+        <th>Reservation ID</th>
+        <th>User</th>
+        <th>Room</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+    </tr>
+    {% for reservation in reservations %}
+    <tr>
+        <td>{{ reservation.id}}</td>
+        <td>{{ reservation.user }}</td>
+        <td>{{ reservation.room }}</td>
+        <td>{{ reservation.check_in_date }}</td>
+        <td>{{ reservation.check_out_date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
