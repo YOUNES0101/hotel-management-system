@@ -1,23 +1,37 @@
+
+<!DOCTYPE html>
 {% extends 'dashboard_app/base.html' %}
 
+
+
 {% block content %}
-<h1>Manage Reservations</h1>
-<table>
-    <tr>
-        <th>Reservation ID</th>
-        <th>User</th>
-        <th>Room</th>
-        <th>Check-in</th>
-        <th>Check-out</th>
-    </tr>
-    {% for reservation in reservations %}
-    <tr>
-        <td>{{ reservation.id}}</td>
-        <td>{{ reservation.user }}</td>
-        <td>{{ reservation.room }}</td>
-        <td>{{ reservation.check_in_date }}</td>
-        <td>{{ reservation.check_out_date }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4>Hello, {{ user.first_name|default:"User" }}</h4>
+        <p>Have a nice day</p>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <input type="text" class="form-control" placeholder="Search documents" style="width: 300px;">
+        <button class="btn btn-outline-secondary"><i class="bi bi-funnel"></i></button>
+    </div>
+</div>
+
+<h5 class="mb-3">Booking List</h5>
+
+<div class="card shadow" style="width: 24rem;">
+
+    <div class="card-body">
+        <span class="badge bg-primary">$200 per night</span>
+        <h5 class="card-title mt-2">Blue Origin Fams</h5>
+        <p class="card-subtitle text-muted">Galle, Sri Lanka</p>
+        <p class="mt-2 mb-1">20 Jan – 22 Jan (2 Days)</p>
+        <p class="mb-1">Galle to Colombo Road 245, Main Street, Galle</p>
+        <p class="mb-1">Initial Payment: $200</p>
+        <p>Total Payment: $400</p>
+        <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil-square"></i></button>
+            <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+        </div>
+    </div>
+</div>
 {% endblock %}

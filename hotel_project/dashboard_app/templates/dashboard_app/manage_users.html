@@ -1,21 +1,194 @@
+
+<!DOCTYPE html>
 {% extends 'dashboard_app/base.html' %}
 
 {% block content %}
-<h1>Manage Users</h1>
-<table>
+<h2 class="text-2xl font-semibold mb-6">Manage Users</h2>
+
+<button
+    onclick="openAddUserModal()"
+    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+>
+    Add New User
+</button>
+
+<!-- Modal -->
+<div
+    id="addUserModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center"
+>
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Add New User</h2>
+            <button
+                onclick="closeAddUserModal()"
+                class="text-gray-500 hover:text-gray-700"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div class="form-group">
+                <label
+                    for="id_email"
+                    class="block text-sm font-medium text-gray-700"
+                    >Email:</label
+                >
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label
+                    for="id_password1"
+                    class="block text-sm font-medium text-gray-700"
+                    >Password:</label
+                >
+                {{ form.password1 }}
+            </div>
+            <div class="form-group">
+                <label
+                    for="id_password2"
+                    class="block text-sm font-medium text-gray-700"
+                    >Confirm Password:</label
+                >
+                {{ form.password2 }}
+            </div>
+            <button
+                type="submit"
+                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+                Create User
+            </button>
+        </form>
+    </div>
+</div>
+
+
+
+
+<script>
+    function openAddUserModal() {
+        document.getElementById("addUserModal").classList.remove("hidden");
+    }
+
+    function closeAddUserModal() {
+        document.getElementById("addUserModal").classList.add("hidden");
+    }
+
+    // Close modal when clicking outside
+    document
+        .getElementById("addUserModal")
+        .addEventListener("click", function (e) {
+            if (e.target === this) {
+                closeAddUserModal();
+            }
+        });
+</script>
+
+<style>
+    #addUserModal input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        margin-top: 0.25rem;
+    }
+
+    #addUserModal input:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+
+    .form-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .form-container h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4f46e5; /* Indigo */
+    margin-bottom: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="password"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  .form-group input:focus {
+    border-color: #4f46e5;
+  }
+
+  .form-submit {
+    background-color: #4f46e5;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .form-submit:hover {
+    background-color: #4338ca;
+  }
+
+</style>
+
+
+
+
+
+
+<table class="min-w-full bg-white rounded-xl overflow-hidden shadow-md fade-in">
+  <thead class="bg-gray-100">
     <tr>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Actions</th>
+      <th class="text-left px-6 py-3 text-sm font-semibold">Role</th>
+      <th class="text-left px-6 py-3 text-sm font-semibold">Email</th>
+      <th class="px-6 py-3"></th>
     </tr>
+  </thead>
+  <tbody>
     {% for user in users %}
+    <tr class="border-t hover:bg-gray-50 transition">
+      <td class="px-6 py-4">{{ user.username }}</td>
+      <td class="px-6 py-4">{{ user.email }}</td>
+      <td class="px-6 py-4 text-right">
+        <a href="" class="text-red-600 hover:text-red-800"><i class="bi bi-trash"></i> Delete</a>
+      </td>
+    </tr>
+    {% empty %}
     <tr>
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-        <td>
-            <a href="#">Edit</a> | <a href="#">Delete</a>
-        </td>
+      <td colspan="3" class="px-6 py-4 text-center text-gray-500">No users found.</td>
     </tr>
     {% endfor %}
+  </tbody>
 </table>
 {% endblock %}
