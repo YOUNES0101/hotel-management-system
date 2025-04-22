@@ -91,7 +91,7 @@ def add_user_view(request):
 
 
 def home_view(request):
-    signup_form = CustomUserCreationForm(data=request.POST or None)  # Create or bind the form
+    signup_form = CustomUserForm(data=request.POST or None)  # Create or bind the form
 
     if request.method == "POST" and signup_form.is_valid():
         signup_form.save()  # Save the user if the form is valid

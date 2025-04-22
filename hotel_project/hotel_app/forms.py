@@ -45,13 +45,33 @@ from .models import CustomUser
 #             user.save()
 #         return user
 
-from .models import CustomUser
+
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})
     )
+    password1 = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
+        help_text="Your password must be at least 8 characters long and contain a mix of letters, numbers, and symbols."
+    )
+
+    password2 = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
+        help_text="Enter the same password as above, for verification."
+    )
+    # Add custom validation for password strength
+    def clean_password1(self):
+        password = self.cleaned_data.get('password1')
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            raise forms.ValidationError(e.messages)
+        return password
+
 
     class Meta:
         model = CustomUser
@@ -67,7 +87,7 @@ class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Remove help_text from password fields
-        self.fields['password1'].help_text = None
+
         self.fields['password2'].help_text = None
 
 
@@ -77,3 +97,6 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+
