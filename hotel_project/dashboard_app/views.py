@@ -1,105 +1,96 @@
-# from django.shortcuts import render, get_object_or_404, redirect
-# from .forms import UserForm
-# # from django.shortcuts import render
-# # from django.contrib.auth.models import User
-# from hotel_app.models import reservation, room ,CustomUser  # Assuming these models exist
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from hotel_app.models import reservation, room, CustomUser
 
-# def dashboard_home(request):
-#     return render(request, 'dashboard_app/home.html')
+# Home View
+class DashboardHomeView(TemplateView):
+    template_name = "dashboard_app/home.html"
 
-# def manage_reservations(request):
-#     reservations = reservation.objects.all()
-#     return render(request, 'dashboard_app/manage_reservations.html', {'reservations': reservations})
-
-# def manage_rooms(request):
-#     rooms = room.objects.all()
-#     return render(request, 'dashboard_app/manage_rooms.html', {'rooms': rooms})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_count'] = CustomUser.objects.count()
+        context['reservation_count'] = reservation.objects.count()
+        context['room_count'] = room.objects.count()
+        return context
 
 
-# def manage_users(request):
-#     users = CustomUser.objects.all()
-#     return render(request, 'dashboard_app/manage_users.html', {'users': users})
+class UserListView(ListView):
+    model = CustomUser
+    template_name = "dashboard_app/users/list.html"
+    context_object_name = "users"
+    paginate_by = 10  # Number of users per page
+    ordering = ['email']
 
-# def add_user(request):
-#     if request.method == 'POST':
-#         form = UserForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('manage_users')
-#     else:
-#         form = UserForm()
-#     return render(request, 'dashboard_app/add_user.html', {'form': form})
+    def get_queryset(self):
+        return CustomUser.objects.all().order_by('email')
 
-# def edit_user(request, user_id):
-#     user = get_object_or_404(CustomUser, id=user_id)
-#     if request.method == 'POST':
-#         form = UserForm(request.POST, instance=user)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('manage_users')
-#     else:
-#         form = UserForm(instance=user)
-#     return render(request, 'dashboard_app/edit_user.html', {'form': form})
+# Add a class-based view for creating users
+class UserCreateView(CreateView):
+    model = CustomUser
+    template_name = "dashboard_app/users/add.html"
+    fields = ['email','password', 'is_active', 'is_staff']
+    success_url = reverse_lazy('users')  # Removed dashboard: namespace
 
-# def delete_user(request, user_id):
-#     user = get_object_or_404(CustomUser, id=user_id)
-#     if request.method == 'POST':
-#         user.delete()
-#         return redirect('manage_users')
-#     return render(request, 'dashboard_app/delete_user.html', {'user': user})
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        # Set password properly
+        user.set_password(form.cleaned_data['password'])
+        user.save()
+        return super().form_valid(form)
 
+# Class-based views for editing and deleting users
+class UserUpdateView(UpdateView):
+    model = CustomUser
+    template_name = "dashboard_app/users/edit.html"
+    fields = ['email','is_active', 'is_staff']
+    success_url = reverse_lazy('users')  # Removed dashboard: namespace
 
+class UserDeleteView(DeleteView):
+    model = CustomUser
+    template_name = "dashboard_app/users/delete.html"
+    success_url = reverse_lazy('users')  # Removed dashboard: namespace
 
-from django.shortcuts import render, redirect
-from hotel_app.models import CustomUser
-from .forms import CustomUserForm
-def dashboard(request):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.get_object()
+        return context
 
-    CustomUser_count = CustomUser.objects.count()  # Count total users
-    # You can also get booking and revenue stats here
-    return render(request, 'dashboard_app/home.html', {'user_count': CustomUser_count})
+# Room Views
+class RoomListView(ListView):
+    model = room
+    template_name = "dashboard_app/rooms/list.html"
+    context_object_name = "rooms"
+    paginate_by = 10
+    ordering = ['room_number']
 
+    def get_queryset(self):
+        return room.objects.all().order_by('room_number')
 
-def manage_reservations(request):
-    return render(request, 'dashboard_app/manage_reservations.html')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add available room count to context
+        context['available_count'] = room.objects.filter(is_available=True).count()
+        return context
 
+class RoomCreateView(CreateView):
+    model = room
+    template_name = "dashboard_app/rooms/add.html"
+    fields = ['room_number', 'room_type', 'price_per_night', 'capacity', 'is_available', 'description', 'image']
+    success_url = reverse_lazy('rooms')
 
-def settings(request):
-    return render(request, 'settings.html')
+class RoomUpdateView(UpdateView):
+    model = room
+    template_name = "dashboard_app/rooms/edit.html"
+    fields = ['room_number', 'room_type', 'price_per_night', 'capacity', 'is_available', 'description', 'image']
+    success_url = reverse_lazy('rooms')
 
+class RoomDeleteView(DeleteView):
+    model = room
+    template_name = "dashboard_app/rooms/delete.html"
+    success_url = reverse_lazy('rooms')
 
-
-
-def manage_users(request):
-    users = CustomUser.objects.all()  # You can filter or order if needed
-    return render(request, 'dashboard_app/manage_users.html', {'users': users})
-
-
-
-
-
-def add_user_view(request):
-    if request.method == 'POST':
-        form = CustomUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('manage_users')  # Replace with your actual user management page
-    else:
-        form = CustomUserForm()
-    return render(request, 'dashboard_app/add_user.html', {'form': form})
-
-
-
-def home_view(request):
-    signup_form = CustomUserForm(data=request.POST or None)  # Create or bind the form
-
-    if request.method == "POST" and signup_form.is_valid():
-        signup_form.save()  # Save the user if the form is valid
-        messages.success(request, "Your account has been created successfully!")
-        return redirect('home')  # Redirect to the home page
-
-    context = {
-        'signup_form': signup_form,  # Pass the form to the template
-    }
-    return render(request, 'hotel_app/home.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['room'] = self.get_object()
+        return context
 

@@ -15,10 +15,21 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
-    path('', views.dashboard, name='dashboard'),
-    path('manange_reservations/', views.manage_reservations, name='manage_reservations'),
-    path('settings/', views.settings, name='settings'),
-    path('manange_users/', views.manage_users, name='manage_users'),
-    path('add_user/', views.add_user_view, name='add_user'),
+
+    path('', views.DashboardHomeView.as_view(), name='dashboard_home'),
+    # User management URLs
+    path('users/', views.UserListView.as_view(), name='users'),
+    path('users/add/', views.UserCreateView.as_view(), name='user_add'),
+    path('users/<int:pk>/edit/', views.UserUpdateView.as_view(), name='user_edit'),
+    path('users/<int:pk>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
+    # Room management URLs
+    path('rooms/', views.RoomListView.as_view(), name='rooms'),
+    path('rooms/add/', views.RoomCreateView.as_view(), name='room_add'),
+    path('rooms/<int:pk>/edit/', views.RoomUpdateView.as_view(), name='room_edit'),
+    path('rooms/<int:pk>/delete/', views.RoomDeleteView.as_view(), name='room_delete'),
+    # Reservation management URL
+    # Add other URLs as needed
 ]
+

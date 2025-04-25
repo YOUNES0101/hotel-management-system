@@ -1,0 +1,369 @@
+{% extends "dashboard_app/base.html" %} {% load static %} {% block title %}Room
+Management - HORIZONH{% endblock %} {% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">Room Management</h2>
+        <a
+            href="{% url 'room_add' %}"
+            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+            <i class="bi bi-plus-lg mr-2"></i> Add Room
+        </a>
+    </div>
+
+    <!-- Room Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div
+            class="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500"
+        >
+            <div class="flex items-center">
+                <div class="flex-1">
+                    <p class="text-xs font-medium text-blue-600 uppercase">
+                        Total Rooms
+                    </p>
+                    <h3 class="text-xl font-bold">{{ rooms.count }}</h3>
+                </div>
+                <div class="text-gray-400">
+                    <i class="bi bi-building text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="bg-white rounded-xl shadow-md p-4 border-l-4 border-green-500"
+        >
+            <div class="flex items-center">
+                <div class="flex-1">
+                    <p class="text-xs font-medium text-green-600 uppercase">
+                        Available
+                    </p>
+                    <h3 class="text-xl font-bold">{{ available_count }}</h3>
+                </div>
+                <div class="text-gray-400">
+                    <i class="bi bi-check-circle text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="relative">
+                <div
+                    class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                >
+                    <i class="bi bi-search text-gray-400"></i>
+                </div>
+                <input
+                    type="text"
+                    id="roomSearch"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+                    placeholder="Search rooms..."
+                />
+            </div>
+
+            <select
+                id="roomTypeFilter"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            >
+                <option value="">All Room Types</option>
+                <option value="Single">Single</option>
+                <option value="Double">Double</option>
+                <option value="Suite">Suite</option>
+                <option value="Luxury">Luxury</option>
+            </select>
+
+            <select
+                id="statusFilter"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            >
+                <option value="">Any Status</option>
+                <option value="available">Available</option>
+                <option value="occupied">Occupied</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <table id="roomsTable" class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                        Image
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                        Room #
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                        Type
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                        Price
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                        Capacity
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                        Status
+                    </th>
+                    <th
+                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for room in rooms %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex-shrink-0 h-16 w-24">
+                            {% if room.image %}
+                            <img
+                                class="h-16 w-24 object-cover rounded-md"
+                                src="{% if room.image.url|slice:'0:4' == 'http' %}{{ room.image.url }}{% else %}{% static room.image.url %}{% endif %}"
+                                alt="{{ room.room_type }} room"
+                                onerror="this.onerror=null; this.src='{% static 'dashboard_app/images/room' %}{{ room.room_number|lower|default:'room' }}.jpg'"
+                            />
+                            {% else %}
+                            <div
+                                class="h-16 w-24 bg-gray-100 rounded-md flex items-center justify-center"
+                            >
+                                <i
+                                    class="bi bi-image text-gray-400 text-2xl"
+                                ></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td
+                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                        <i class="bi bi-door-closed text-blue-500 mr-1"></i> {{ room.room_number | default:"NAN" }}
+                    </td>
+                    <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                        {{ room.room_type|default:"Standard" }}
+                    </td>
+                    <td
+                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600"
+                    >
+                        ${{ room.price_per_night|floatformat:2|default:"0.00" }}
+                    </td>
+                    <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                        <i class="bi bi-people text-gray-400 mr-1"></i> {{ room.capacity | default:"2" }} persons
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if room.is_available %}
+                        <span
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                        >
+                            <i class="bi bi-check-circle mr-1"></i> Available
+                        </span>
+                        {% else %}
+                        <span
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                        >
+                            <i class="bi bi-x-circle mr-1"></i> Occupied
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td
+                        class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                    >
+                        <a
+                            href="{% url 'room_edit' room.id %}"
+                            class="text-indigo-600 hover:text-indigo-900 mr-3"
+                        >
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a
+                            href="{% url 'room_delete' room.id %}"
+                            class="text-red-600 hover:text-red-900"
+                        >
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td
+                        colspan="7"
+                        class="px-6 py-4 text-center text-sm text-gray-500"
+                    >
+                        <p class="my-4">No rooms found.</p>
+                        <a
+                            href="{% url 'room_add' %}"
+                            class="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+                        >
+                            <i class="bi bi-plus-lg mr-1"></i> Add your first
+                            room
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="py-4 flex justify-center">
+        <nav
+            class="inline-flex rounded-md shadow-sm -space-x-px"
+            aria-label="Pagination"
+        >
+            {% if page_obj.has_previous %}
+            <a
+                href="?page=1"
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+                <span class="sr-only">First</span>
+                <i class="bi bi-chevron-double-left"></i>
+            </a>
+            <a
+                href="?page={{ page_obj.previous_page_number }}"
+                class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+                <span class="sr-only">Previous</span>
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            {% endif %} {% for num in page_obj.paginator.page_range %} {% if
+            page_obj.number == num %}
+            <span
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600"
+            >
+                {{ num }}
+            </span>
+            {% elif num > page_obj.number|add:'-3' and num <
+            page_obj.number|add:'3' %}
+            <a
+                href="?page={{ num }}"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+                {{ num }}
+            </a>
+            {% endfor %} {% if page_obj.has_next %}
+            <a
+                href="?page={{ page_obj.next_page_number }}"
+                class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+                <span class="sr-only">Next</span>
+                <i class="bi bi-chevron-right"></i>
+            </a>
+            <a
+                href="?page={{ page_obj.paginator.num_pages }}"
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+                <span class="sr-only">Last</span>
+                <i class="bi bi-chevron-double-right"></i>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    <!-- Image Preview Modal -->
+    <div
+        class="modal fade"
+        id="imagePreviewModal"
+        tabindex="-1"
+        aria-labelledby="imagePreviewModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagePreviewModalLabel">
+                        Room Image
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <img
+                        id="modalImage"
+                        src=""
+                        class="img-fluid w-100"
+                        alt="Room preview"
+                    />
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    $(document).ready(function () {
+        // Initialize DataTable
+        var roomTable = $("#roomsTable").DataTable({
+            paging: false,
+            info: false,
+            searching: true,
+            ordering: true,
+            responsive: true,
+            autoWidth: false,
+            dom: "t", // Show only the table, no controls
+        });
+
+        // Custom search box
+        $("#roomSearch").on("keyup", function () {
+            roomTable.search(this.value).draw();
+        });
+
+        // Room type filtering
+        $("#roomTypeFilter").on("change", function () {
+            roomTable.column(2).search($(this).val()).draw(); // Changed from 1 to 2 after adding image column
+        });
+
+        // Status filtering
+        $("#statusFilter").on("change", function () {
+            let val = $(this).val();
+            let searchVal = "";
+
+            if (val === "available") searchVal = "Available";
+            else if (val === "occupied") searchVal = "Occupied";
+
+            roomTable.column(5).search(searchVal).draw(); // Changed from 4 to 5 after adding image column
+        });
+
+        // Image preview functionality
+        $(".room-image").on("click", function () {
+            var imgSrc = $(this).attr("src");
+            var roomName = $(this).attr("alt");
+            $("#modalImage").attr("src", imgSrc);
+            $("#imagePreviewModalLabel").text(roomName);
+            $("#imagePreviewModal").modal("show");
+        });
+    });
+</script>
+{% endblock %}

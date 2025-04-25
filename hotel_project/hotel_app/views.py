@@ -9,25 +9,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from hotel_app.models import CustomUser
 
-
-
-
-# def home_view(request):
-#     signup_form = CustomUserCreationForm(data=request.POST or None)  # Create or bind the form
-#     login_form = AuthenticationForm(data=request.POST or None)  # Create or bind the login form
-#     if request.method == "POST" and signup_form.is_valid():
-#         signup_form.save()  # Save the user if the form is valid
-#         messages.success(request, "Your account has been created successfully!")
-#         return redirect('home')  # Redirect to the home page
-
-#     context = {
-#         'signup_form': signup_form,  # Pass the form to the template
-#     }
-#     #authentication form to check if the user is already registered or not
-
-#     return render(request, 'hotel_app/home.html', context)
-
-
 def home_view(request):
     signup_form = CustomUserCreationForm()
     login_form = AuthenticationForm()
@@ -49,16 +30,27 @@ def home_view(request):
         elif 'login' in request.POST:
             login_form = AuthenticationForm(request, data=request.POST)
             if login_form.is_valid():
-                user = login_form.get_user()
-                login(request, user)
-                messages.success(request, f"Welcome back, {user.username}!")
-                return redirect('home')
+                username = login_form.cleaned_data.get('username')  # This will be the email in your case
+                password = login_form.cleaned_data.get('password')
+                user = authenticate(username=username, password=password)
+
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, f"Welcome back!")
+                    return redirect('home')
+                else:
+                    messages.error(request, "Invalid email or password.")
             else:
-                messages.error(request, "Login failed. Please check your credentials.")
+                messages.error(request, "Invalid email or password.")
 
     context = {
         'signup_form': signup_form,
         'login_form': login_form,
     }
     return render(request, 'hotel_app/home.html', context)
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been successfully logged out!")
+    return redirect('home')
 

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Room - Hotel Management System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <h2>Hotel Management</h2>
+        </div>
+        <ul class="menu">
+            <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="../bookings/index.html"><i class="fas fa-calendar-check"></i> Bookings</a></li>
+            <li class="active"><a href="index.html"><i class="fas fa-bed"></i> Rooms</a></li>
+            <li><a href="../guests/index.html"><i class="fas fa-users"></i> Guests</a></li>
+            <li><a href="../staff/index.html"><i class="fas fa-user-tie"></i> Staff</a></li>
+            <li><a href="../settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="../index.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h2>
+                <label for="nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </label>
+                Add New Room
+            </h2>
+            <div class="user-wrapper">
+                <img src="../images/admin-avatar.png" width="40px" height="40px" alt="Admin Avatar">
+                <div>
+                    <h4>Admin User</h4>
+                    <small>Super Admin</small>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Room Information</h3>
+                </div>
+                <div class="card-body">
+                    <form id="addRoomForm">
+                        <div class="form-group">
+                            <label for="roomNumber">Room Number:</label>
+                            <input type="text" id="roomNumber" name="roomNumber" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="roomType">Room Type:</label>
+                            <select id="roomType" name="roomType" required>
+                                <option value="">Select Room Type</option>
+                                <option value="Single">Single</option>
+                                <option value="Double">Double</option>
+                                <option value="Twin">Twin</option>
+                                <option value="Suite">Suite</option>
+                                <option value="Deluxe">Deluxe</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price">Price per Night ($):</label>
+                            <input type="number" id="price" name="price" min="0" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="capacity">Maximum Capacity:</label>
+                            <input type="number" id="capacity" name="capacity" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <select id="status" name="status" required>
+                                <option value="Available">Available</option>
+                                <option value="Occupied">Occupied</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Cleaning">Cleaning</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="amenities">Amenities:</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="amenities" value="WiFi"> WiFi</label>
+                                <label><input type="checkbox" name="amenities" value="TV"> TV</label>
+                                <label><input type="checkbox" name="amenities" value="AC"> Air Conditioning</label>
+                                <label><input type="checkbox" name="amenities" value="Minibar"> Mini Bar</label>
+                                <label><input type="checkbox" name="amenities" value="Safe"> Safe</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="roomImage">Room Image:</label>
+                            <input type="file" id="roomImage" name="roomImage" accept="image/*">
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary">Add Room</button>
+                            <a href="index.html" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.getElementById('addRoomForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Here you would typically add code to handle the form submission
+            // For example, sending data to a server using fetch or XMLHttpRequest
+            alert('Room added successfully!');
+            window.location.href = 'index.html'; // Redirect back to the rooms listing page
+        });
+    </script>
+</body>
+</html>

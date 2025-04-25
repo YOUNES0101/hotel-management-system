@@ -1,0 +1,113 @@
+{% extends "dashboard_app/base.html" %} {% load static %} {% block title %}Edit
+User - HORIZONH{% endblock %} {% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">Edit User</h2>
+        <a
+            href="{% url 'users' %}"
+            class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+        >
+            <i class="bi bi-arrow-left mr-2"></i> Back to Users
+        </a>
+    </div>
+
+    <div
+        class="bg-white rounded-xl shadow-md overflow-hidden max-w-2xl mx-auto"
+    >
+        <div class="p-8">
+            <div class="mb-6 pb-4 border-b border-gray-200">
+                <div class="flex items-center">
+                    <div
+                        class="rounded-full bg-indigo-100 w-12 h-12 flex items-center justify-center mr-4"
+                    >
+                        <i class="bi bi-person text-indigo-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">
+                            {{ object.email }}
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            Account created: {{ object.date_joined|date:"M d, Y"
+                            }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Email Field -->
+            
+
+                <!-- First Name Field -->
+
+
+                <!-- Last Name Field -->
+
+
+
+                <!-- Status Fields -->
+                <div class="mb-6">
+                    <div class="flex items-center mb-3">
+                        <input
+                            type="checkbox"
+                            name="{{ form.is_active.name }}"
+                            id="{{ form.is_active.id_for_label }}"
+                            class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            {%
+                            if
+                            form.is_active.value
+                            %}checked{%
+                            endif
+                            %}
+                        />
+                        <label
+                            for="{{ form.is_active.id_for_label }}"
+                            class="ml-2 block text-sm text-gray-700"
+                        >
+                            Active (Can login to the system)
+                        </label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input
+                            type="checkbox"
+                            name="{{ form.is_staff.name }}"
+                            id="{{ form.is_staff.id_for_label }}"
+                            class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            {%
+                            if
+                            form.is_staff.value
+                            %}checked{%
+                            endif
+                            %}
+                        />
+                        <label
+                            for="{{ form.is_staff.id_for_label }}"
+                            class="ml-2 block text-sm text-gray-700"
+                        >
+                            Staff Member (Can access admin dashboard)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-between pt-4 border-t border-gray-200">
+                    <a
+                        href="{% url 'user_delete' object.id %}"
+                        class="text-red-600 hover:text-red-800 py-2 flex items-center"
+                    >
+                        <i class="bi bi-trash mr-2"></i> Delete User
+                    </a>
+                    <button
+                        type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                        <i class="bi bi-save mr-2"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

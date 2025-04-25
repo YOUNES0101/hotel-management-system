@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import FileExtensionValidator
 
 
 class CustomUser(AbstractUser):
@@ -11,23 +12,28 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
-    
 
 
 class room(models.Model):
-
     room_number = models.CharField(max_length=10, unique=True)
     room_type = models.CharField(max_length=50)
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
     is_available = models.BooleanField(default=True)
+    capacity = models.IntegerField()
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(
+        upload_to='hotel_app/static/dashboard_app/images/' or 'hotel_app/static/hotel_app/images/rooms/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]
+    )
 
     def __str__(self):
         return f"{self.room_type} - {self.room_number}"
 
 
 class reservation(models.Model):
-
-    client = models.ForeignKey( CustomUser, on_delete=models.CASCADE)
+    client = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     room = models.ForeignKey(room, on_delete=models.CASCADE)
     check_in_date = models.DateField()
     check_out_date = models.DateField()

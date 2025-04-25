@@ -6,6 +6,7 @@
     <title>HorizonH - Home</title>
     <link rel="stylesheet" href="{% static 'hotel_app/home_css.css' %}" />
     <link rel="stylesheet" href="{% static 'hotel_app/modal.css' %}" />
+    <link rel="stylesheet" href="{% static 'hotel_app/dropdown.css' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700display=swap"
@@ -17,28 +18,71 @@
     <nav class="navbar">
       <div class="logo">HORIZON<span class="highlight">H</span></div>
       <ul class="nav-links">
+
         <li><a href="">Home</a></li>
 
-        <li><a href="">Hotels</a></li>
         <li><a href="">Rooms</a></li>
+
         <li><a href="">About</a></li>
+
         <li><a href="">Contact</a></li>
+        
         {% if user.is_authenticated %}
-    <li class="profile-dropdown">
-      <a href="" class="profile-link">👤 {{ user.email }} ▾</a>
-      <ul class="dropdown-menu">
-        <li class="dropdown-section-title">Account</li>
-        <li>
-          <a href="/logout" class="logout-with-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="logout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Logout
-          </a>
-        </li>
-      </ul>
+<li class="profile-dropdown">
+  <a href="" class="profile-link">
+    <div class="avatar-container">
+      <div class="avatar">{{ user.email|first|upper }}</div>
+    </div>
+    <span class="user-email">{{ user.email }}</span>
+    <span class="dropdown-arrow">▾</span>
+  </a>
+  <ul class="dropdown-menu">
+    </div>
+    <div class="dropdown-divider"></div>
+    {% if user.is_staff %}
+    <li class="dropdown-item">
+      <a href="dashboard/">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+          <rect x="3" y="3" width="7" height="9" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="3" width="7" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="12" width="7" height="9" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="3" y="16" width="7" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span>Dashboard</span>
+      </a>
     </li>
-      {% else %}
+    {% endif %}
+    <li class="dropdown-item">
+      <a href="#">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+          <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 21v-2a7 7 0 0 1 7-7h2a7 7 0 0 1 7 7v2" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span>My Profile</span>
+      </a>
+    </li>
+    <li class="dropdown-item">
+      <a href="#">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3.32.84-4.5 2.14C10.82 3.84 9.26 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span>My Reservations</span>
+      </a>
+    </li>
+    <div class="dropdown-divider"></div>
+    <li class="dropdown-item logout">
+      <a href="/logout">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" fill="none" stroke="currentColor" stroke-width="2"/>
+          <polyline points="16 17 21 12 16 7" fill="none" stroke="currentColor" stroke-width="2"/>
+          <line x1="21" y1="12" x2="9" y2="12" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span>Logout</span>
+      </a>
+    </li>
+  </ul>
+</li>
+{% else %}
             <li>
         <button class="login-btn" id="openLoginModal">Login</button>
           </li>
@@ -154,7 +198,14 @@
         <form method="post" action="{% url 'home' %}">
           {% csrf_token %}
           <input type="hidden" name="login" value="1"> <!-- Add this line -->
-          <!-- Render the form fields (errors included) -->
+          <!-- Display any login errors -->
+          {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
           {{ login_form.as_p }}
           <button type="submit" class="btn">Login</button>
         </form>
