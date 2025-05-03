@@ -59,7 +59,7 @@ class UserDeleteView(DeleteView):
 class RoomListView(ListView):
     model = room
     template_name = "dashboard_app/rooms/list.html"
-    context_object_name = "rooms"
+    context_object_name = "room_list"
     paginate_by = 10
     ordering = ['room_number']
 
@@ -76,18 +76,18 @@ class RoomCreateView(CreateView):
     model = room
     template_name = "dashboard_app/rooms/add.html"
     fields = ['room_number', 'room_type', 'price_per_night', 'capacity', 'is_available', 'description', 'image']
-    success_url = reverse_lazy('rooms')
+    success_url = reverse_lazy('room_list')
 
 class RoomUpdateView(UpdateView):
     model = room
     template_name = "dashboard_app/rooms/edit.html"
     fields = ['room_number', 'room_type', 'price_per_night', 'capacity', 'is_available', 'description', 'image']
-    success_url = reverse_lazy('rooms')
+    success_url = reverse_lazy('room_list')
 
 class RoomDeleteView(DeleteView):
     model = room
     template_name = "dashboard_app/rooms/delete.html"
-    success_url = reverse_lazy('rooms')
+    success_url = reverse_lazy('room_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

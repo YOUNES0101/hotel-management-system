@@ -1,51 +1,72 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 
+class UserLoginForm(forms.Form):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'auth-form__input', 'placeholder': 'Your email'})
+    )
+    password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={'class': 'auth-form__input', 'placeholder': 'Your password'})
+    )
+    remember = forms.BooleanField(required=False)
 
-# class CustomUserCreationForm(UserCreationForm):
-#     email = forms.EmailField(
-#         required=True,
-#         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})
-#     )
+class UserRegistrationForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'auth-form__input', 'placeholder': 'Your full name'})
+    )
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'auth-form__input', 'placeholder': 'Your email'})
+    )
+    password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={'class': 'auth-form__input', 'placeholder': 'Create a password'}),
+        validators=[validate_password]
+    )
+    password_confirmation = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={'class': 'auth-form__input', 'placeholder': 'Confirm your password'})
+    )
 
-#     class Meta:
-#         model = User
-#         fields = ['username', 'email', 'password1', 'password2']
+    class Meta:
+        model = CustomUser
+        fields = ('email',)
 
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         user.email = self.cleaned_data['email']
-#         if commit:
-#             user.save()
-#         return user
-# class CustomUserCreationForm(UserCreationForm):
-#     email = forms.EmailField(
-#         required=True,
-#         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})
-#     )
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if CustomUser.objects.filter(email=email).exists():
+            raise ValidationError("A user with this email already exists.")
+        return email
 
-#     class Meta:
-#         model = User
-#         fields = ['email', 'password1', 'password2']
+    def clean_password_confirmation(self):
+        password = self.cleaned_data.get("password")
+        password_confirmation = self.cleaned_data.get("password_confirmation")
+        if password and password_confirmation and password != password_confirmation:
+            raise ValidationError("The passwords do not match.")
+        return password_confirmation
 
-#     def clean_email(self):
-#         email = self.cleaned_data.get('email')
-#         if User.objects.filter(email=email).exists():
-#             raise forms.ValidationError("A user with this email already exists.")
-#         return email
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
 
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         user.username = self.cleaned_data['email']
-#         user.email = self.cleaned_data['email']
-#         if commit:
-#             user.save()
-#         return user
+        # Set first_name and last_name from the full name
+        if 'name' in self.cleaned_data and self.cleaned_data['name']:
+            name_parts = self.cleaned_data['name'].split(' ', 1)
+            user.first_name = name_parts[0]
+            if len(name_parts) > 1:
+                user.last_name = name_parts[1]
 
-
+        if commit:
+            user.save()
+        return user
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(

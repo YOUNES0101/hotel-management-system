@@ -1,67 +1,1432 @@
 {% extends 'dashboard_app/base.html' %}
+{% load static %}
+
+ {%block extra_css %}
+<style>
+    /* Stats Cards - Enhanced with Luxury Theme */
+    .stats-card {
+        /* Inherits card styles from base.html */
+        /* Additional specific styles if needed */
+    }
+
+    .stats-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.85rem;
+        /* Use subtle gradients with theme colors */
+        background-image: linear-gradient(
+            135deg,
+            rgba(var(--primary-rgb), 0.1),
+            rgba(var(--primary-rgb), 0.05)
+        );
+        transition: all var(--transition-speed);
+    }
+    .stats-card:hover .stats-icon {
+        transform: scale(1.05);
+        box-shadow: var(--glow-effect);
+    }
+
+    /* Specific icon background colors using theme variables */
+    .stats-icon.bg-primary-subtle {
+        background-image: linear-gradient(
+            135deg,
+            rgba(var(--primary-rgb), 0.15),
+            rgba(var(--primary-rgb), 0.08)
+        );
+        color: var(--primary);
+    }
+    .stats-icon.bg-success-subtle {
+        background-image: linear-gradient(
+            135deg,
+            rgba(var(--success-rgb), 0.15), /* Use --success-rgb */
+            rgba(var(--success-rgb), 0.08)  /* Use --success-rgb */
+        );
+        color: var(--success);
+    }
+    .stats-icon.bg-warning-subtle {
+        background-image: linear-gradient(
+            135deg,
+            rgba(var(--warning-rgb), 0.15), /* Use --warning-rgb */
+            rgba(var(--warning-rgb), 0.08)  /* Use --warning-rgb */
+        );
+        color: var(--warning);
+    }
+    .stats-icon.bg-info-subtle {
+        background-image: linear-gradient(
+            135deg,
+            rgba(var(--info-rgb), 0.15), /* Use --info-rgb */
+            rgba(var(--info-rgb), 0.08)  /* Use --info-rgb */
+        );
+        color: var(--info);
+    }
+
+    .stats-info h4 {
+        font-size: 2.1rem;
+        font-weight: 700;
+        margin-bottom: 0.15rem;
+        color: var(--dark);
+        font-family: Arial, Helvetica, sans-serif; /* Use heading font */
+    }
+
+    .stats-info p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+        color: var(--gray);
+        font-weight: 500;
+    }
+
+    .trend-indicator {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    .trend-indicator.text-success { color: var(--success) !important; }
+    .trend-indicator.text-danger { color: var(--danger) !important; }
+
+    .trend-indicator i {
+        font-size: 1.1rem;
+        margin-right: 0.3rem;
+    }
+
+    /* Chart Enhancements */
+    .chart-container {
+        position: relative;
+        min-height: 320px;
+    }
+
+    .chart-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem 1.5rem;
+        margin-top: 1.5rem;
+        padding: 0;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--gray-dark);
+    }
+
+    .legend-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        margin-right: 0.6rem;
+    }
+    /* Use theme colors for legend */
+    .legend-color.bg-primary { background-color: var(--primary); }
+    .legend-color.bg-success { background-color: var(--success); }
+    .legend-color.bg-warning { background-color: var(--warning); }
+    .legend-color.bg-danger { background-color: var(--danger); }
+    .legend-color.bg-info { background-color: var(--info); }
+    .legend-color.bg-gray { background-color: var(--gray); } /* Added gray */
+
+    /* Tabs Styling */
+    .hotel-analytics-tabs .nav-link {
+        border: none;
+        padding: 0.7rem 1.2rem;
+        border-radius: var(--border-radius);
+        margin-right: 0.5rem;
+        color: var(--gray);
+        font-weight: 500;
+        transition: all var(--transition-speed);
+        background-color: transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hotel-analytics-tabs .nav-link:hover {
+        color: var(--primary);
+        background-color: rgba(var(--primary-rgb), 0.05);
+    }
+
+    .hotel-analytics-tabs .nav-link.active {
+        color: var(--primary);
+        background-color: rgba(var(--primary-rgb), 0.1);
+        font-weight: 600;
+        box-shadow: inset 0 -2px 0 var(--primary); /* Subtle active indicator */
+    }
+
+    /* Custom Select - Refined */
+    .custom-select {
+        padding: 0.6rem 2.5rem 0.6rem 1.1rem; /* Adjusted padding */
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        appearance: none;
+        /* Updated SVG icon with theme color */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.85rem center;
+        background-size: 14px;
+        background-color: var(--card-bg);
+        color: var(--dark); /* Use main dark color */
+        font-weight: 500;
+        transition: all var(--transition-speed);
+        font-size: 0.9rem; /* Slightly smaller */
+    }
+    .custom-select:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    }
+    /* Dark mode select */
+    [data-theme="dark"] .custom-select {
+        background-color: var(--gray-light);
+        border-color: var(--border-color);
+        color: var(--dark); /* Light text in dark mode */
+        /* Update SVG color for dark mode */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23d0d3db" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>');
+    }
+    [data-theme="dark"] .custom-select:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+    }
+
+
+    /* Recent Bookings Table - Inherits base table styles */
+    .table th {
+        /* Styles inherited from base.html */
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .table td {
+        vertical-align: middle;
+        font-size: 0.9rem;
+        color: var(--gray-dark);
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        border-top: 1px solid var(--border-color); /* Ensure consistent borders */
+    }
+    .table .avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%; /* Ensure circle */
+    }
+    /* Use theme colors for avatars */
+    .avatar.bg-primary-subtle { background-color: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
+    .avatar.bg-success-subtle { background-color: rgba(var(--success-rgb), 0.1); color: var(--success); }
+    .avatar.bg-info-subtle { background-color: rgba(var(--info-rgb), 0.1); color: var(--info); }
+    .avatar.bg-warning-subtle { background-color: rgba(var(--warning-rgb), 0.1); color: var(--warning); }
+    .avatar.bg-danger-subtle { background-color: rgba(181, 68, 75, 0.1); color: var(--danger); }
+
+    .booking-item {
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        border-left: 4px solid transparent; /* Add space for hover indicator */
+    }
+    .booking-item:hover {
+        background-color: var(--bs-table-hover-bg); /* Use Bootstrap variable */
+        transform: none;
+        border-left-color: var(--primary-light);
+    }
+    .table-hover > tbody > tr:hover > * {
+        color: var(--dark); /* Ensure text color changes on hover */
+    }
+    .table .btn-icon {
+        color: var(--gray);
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-speed);
+    }
+    .table .btn-icon:hover {
+        color: var(--primary);
+        background-color: rgba(var(--primary-rgb), 0.1);
+    }
+    /* Badge styling using theme colors */
+    .badge.bg-success-subtle { background-color: rgba(var(--success-rgb), 0.1) !important; color: var(--success) !important; }
+    .badge.bg-warning-subtle { background-color: rgba(var(--warning-rgb), 0.1) !important; color: var(--warning) !important; }
+    .badge.bg-danger-subtle { background-color: rgba(181, 68, 75, 0.1) !important; color: var(--danger) !important; }
+    .badge.bg-info-subtle { background-color: rgba(var(--info-rgb), 0.1) !important; color: var(--info) !important; }
+
+
+    /* Activity Timeline - Refined */
+    .activity-timeline {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-left: 0.5rem;
+    }
+
+    .activity-item {
+        position: relative;
+        padding-bottom: 1.75rem;
+    }
+
+    .activity-item::before { /* Timeline dot */
+        content: "";
+        position: absolute;
+        left: -1.9rem;
+        top: 0.15rem;
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        background-color: var(--card-bg); /* Match card background */
+        border: 2px solid var(--primary);
+        z-index: 2;
+        transition: all var(--transition-speed);
+    }
+
+    .activity-item::after { /* Timeline line */
+        content: "";
+        position: absolute;
+        left: -1.65rem;
+        top: 0.5rem;
+        bottom: -0.5rem;
+        width: 2px;
+        background-color: var(--border-color);
+        z-index: 1;
+        transition: background-color var(--transition-speed);
+    }
+
+    .activity-item:last-child::after {
+        display: none;
+    }
+
+    .activity-time {
+        font-size: 0.78rem;
+        color: var(--gray);
+        margin-bottom: 0.3rem;
+    }
+
+    .activity-title {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        color: var(--dark);
+        font-size: 0.95rem;
+    }
+
+    .activity-text {
+        font-size: 0.88rem;
+        margin-bottom: 0.5rem;
+        color: var(--gray-dark);
+        line-height: 1.5;
+    }
+    .activity-item .btn {
+        /* Use base button styles */
+        padding: 0.3rem 0.7rem; /* Adjust padding */
+        font-size: 0.8rem;
+    }
+    .activity-item .badge {
+        font-size: 0.75rem;
+        padding: 0.3em 0.6em;
+        font-weight: 500; /* Slightly less bold */
+    }
+
+    /* Dark mode adjustments for timeline */
+    [data-theme="dark"] .activity-item::before {
+        background-color: var(--card-bg);
+        border-color: var(--primary);
+    }
+    [data-theme="dark"] .activity-item::after {
+        background-color: var(--border-color);
+    }
+    [data-theme="dark"] .activity-title {
+        color: var(--dark); /* Light text */
+    }
+    [data-theme="dark"] .activity-text {
+        color: var(--gray-dark);
+    }
+    [data-theme="dark"] .activity-time {
+        color: var(--gray);
+    }
+    /* Dark mode badge adjustments */
+    [data-theme="dark"] .badge.bg-success-subtle { background-color: rgba(62, 180, 137, 0.2) !important; color: var(--success) !important; }
+    [data-theme="dark"] .badge.bg-warning-subtle { background-color: rgba(230, 182, 109, 0.2) !important; color: var(--warning) !important; }
+    [data-theme="dark"] .badge.bg-danger-subtle { background-color: rgba(210, 95, 102, 0.2) !important; color: var(--danger) !important; }
+    [data-theme="dark"] .badge.bg-info-subtle { background-color: rgba(111, 155, 217, 0.2) !important; color: var(--info) !important; }
+
+</style>
+{% endblock %}
 
 {% block content %}
-
-  <!-- Main content -->
-  <main class="flex-1 p-8 bg-gray-50 min-h-screen">
-    <h1 class="text-3xl font-bold text-gray-800 mb-8">Welcome Back 👋</h1>
-
+<div class="row g-4">
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white shadow-xl rounded-2xl p-6 hover:shadow-indigo-200 transition">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-700">Users</h2>
-          <i class="bi bi-people text-indigo-600 text-xl"></i>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div
+                    class="d-flex align-items-center justify-content-between mb-3"
+                >
+                    <div class="stats-icon bg-primary-subtle">
+                        <i class="bx bx-calendar-check"></i>
+                    </div>
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-sm btn-light"
+                            data-bs-toggle="dropdown"
+                        >
+                            <i class="bx bx-dots-horizontal-rounded"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >View Details</a
+                                >
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >Generate Report</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="stats-info">
+                    <h4>87</h4>
+                    <p>Bookings This Month</p>
+                    <div class="trend-indicator text-success">
+                        <i class="bx bx-up-arrow-alt"></i>
+                        <span>12% increase</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <p class="text-3xl font-bold text-indigo-700">{{user_count}}</p>
-        <p class="text-sm text-gray-500 mt-1">Active this month</p>
-      </div>
-
-      <div class="bg-white shadow-xl rounded-2xl p-6 hover:shadow-indigo-200 transition">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-700">Bookings</h2>
-          <i class="bi bi-calendar2-check text-indigo-600 text-xl"></i>
-        </div>
-        <p class="text-3xl font-bold text-indigo-700">0</p>
-        <p class="text-sm text-gray-500 mt-1">This week</p>
-      </div>
-
-      <div class="bg-white shadow-xl rounded-2xl p-6 hover:shadow-indigo-200 transition">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-700">Revenue</h2>
-          <i class="bi bi-cash-coin text-indigo-600 text-xl"></i>
-        </div>
-        <p class="text-3xl font-bold text-indigo-700">0,000</p>
-        <p class="text-sm text-gray-500 mt-1">Monthly income</p>
-      </div>
     </div>
 
-    <!-- Recent Activity or Table (optional) -->
-    <div class="bg-white shadow-xl rounded-2xl p-6">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">Recent Reservations</h2>
-      <table class="w-full table-auto text-sm text-left">
-        <thead>
-          <tr class="text-gray-600 border-b">
-            <th class="pb-2">Guest</th>
-            <th class="pb-2">Room</th>
-            <th class="pb-2">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t hover:bg-gray-50 transition">
-            <td class="py-2">TEST</td>
-            <td>Deluxe Suite</td>
-            <td>2025-04-13</td>
-          </tr>
-          <tr class="border-t hover:bg-gray-50 transition">
-            <td class="py-2">TEST</td>
-            <td>Standard Room</td>
-            <td>2025-04-12</td>
-          </tr>
-          <!-- Add more rows dynamically -->
-        </tbody>
-      </table>
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div
+                    class="d-flex align-items-center justify-content-between mb-3"
+                >
+                    <div class="stats-icon bg-success-subtle">
+                        <i class="bx bx-dollar-circle"></i>
+                    </div>
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-sm btn-light"
+                            data-bs-toggle="dropdown"
+                        >
+                            <i class="bx bx-dots-horizontal-rounded"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >View Details</a
+                                >
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >Generate Report</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="stats-info">
+                    <h4>$42,389</h4>
+                    <p>Monthly Revenue</p>
+                    <div class="trend-indicator text-success">
+                        <i class="bx bx-up-arrow-alt"></i>
+                        <span>8.3% increase</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </main>
+
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div
+                    class="d-flex align-items-center justify-content-between mb-3"
+                >
+                    <div class="stats-icon bg-warning-subtle">
+                        <i class="bx bx-door-open"></i>
+                    </div>
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-sm btn-light"
+                            data-bs-toggle="dropdown"
+                        >
+                            <i class="bx bx-dots-horizontal-rounded"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >View All Rooms</a
+                                >
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >Availability Report</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="stats-info">
+                    <h4>78%</h4>
+                    <p>Room Occupancy</p>
+                    <div class="trend-indicator text-danger">
+                        <i class="bx bx-down-arrow-alt"></i>
+                        <span>3% decrease</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div
+                    class="d-flex align-items-center justify-content-between mb-3"
+                >
+                    <div class="stats-icon bg-info-subtle">
+                        <i class="bx bx-star"></i>
+                    </div>
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-sm btn-light"
+                            data-bs-toggle="dropdown"
+                        >
+                            <i class="bx bx-dots-horizontal-rounded"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >View Reviews</a
+                                >
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    >Customer Feedback</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="stats-info">
+                    <h4>4.8/5</h4>
+                    <p>Customer Rating</p>
+                    <div class="trend-indicator text-success">
+                        <i class="bx bx-up-arrow-alt"></i>
+                        <span>0.2 increase</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Chart -->
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div
+                class="card-header d-flex align-items-center justify-content-between"
+            >
+                <h5 class="card-title">Revenue Analytics</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <select class="custom-select form-select-sm">
+                        <option selected>Last 30 Days</option>
+                        <option>This Month</option>
+                        <option>Last Quarter</option>
+                        <option>This Year</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="bx bx-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul
+                    class="nav nav-tabs hotel-analytics-tabs mb-3"
+                    id="analyticsTab"
+                    role="tablist"
+                >
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link active"
+                            id="revenue-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#revenue"
+                            type="button"
+                        >
+                            Revenue
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link"
+                            id="bookings-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#bookings"
+                            type="button"
+                        >
+                            Bookings
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link"
+                            id="occupancy-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#occupancy"
+                            type="button"
+                        >
+                            Occupancy
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="analyticsTabContent">
+                    <div class="tab-pane fade show active" id="revenue">
+                        <div class="chart-container animate-chart">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="bookings">
+                        <div class="chart-container animate-chart">
+                            <canvas id="bookingsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="occupancy">
+                        <div class="chart-container animate-chart">
+                            <canvas id="occupancyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Status -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div
+                class="card-header d-flex align-items-center justify-content-between"
+            >
+                <h5 class="card-title">Room Status</h5>
+                <button class="btn btn-sm btn-luxe">Manage Rooms</button>
+            </div>
+            <div class="card-body">
+                <div class="chart-container animate-chart">
+                    <canvas id="roomStatusChart"></canvas>
+                </div>
+                <div class="chart-legend mt-4">
+                    <div class="legend-item">
+                        <span class="legend-color bg-primary"></span>
+                        <span>Occupied (45%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color bg-success"></span>
+                        <span>Available (32%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color bg-warning"></span>
+                        <span>Reserved (18%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color bg-gray"></span>
+                        <span>Maintenance (5%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div
+                class="card-header d-flex align-items-center justify-content-between"
+            >
+                <h5 class="card-title">Recent Bookings</h5>
+                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle m-0">
+                        <thead>
+                            <tr>
+                                <th>Guest</th>
+                                <th>Room</th>
+                                <th>Check-in</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="booking-item">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div
+                                            class="avatar avatar-sm bg-primary-subtle me-2"
+                                        >
+                                            JD
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">
+                                                John Doe
+                                            </h6>
+                                            <small class="text-muted"
+                                                >john@example.com</small
+                                            >
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-medium"
+                                        >Executive Suite</span
+                                    >
+                                </td>
+                                <td>
+                                    <span>Apr 28, 2025</span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-success-subtle"
+                                        >Confirmed</span
+                                    >
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button
+                                            class="btn btn-sm btn-icon"
+                                            data-bs-toggle="dropdown"
+                                        >
+                                            <i
+                                                class="bx bx-dots-vertical-rounded"
+                                            ></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >View Details</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >Edit Booking</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item text-danger"
+                                                    href="#"
+                                                    >Cancel</a
+                                                >
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="booking-item">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div
+                                            class="avatar avatar-sm bg-success-subtle me-2"
+                                        >
+                                            AS
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">
+                                                Alice Smith
+                                            </h6>
+                                            <small class="text-muted"
+                                                >alice@example.com</small
+                                            >
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-medium">Deluxe King</span>
+                                </td>
+                                <td>
+                                    <span>Apr 29, 2025</span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-warning-subtle"
+                                        >Pending</span
+                                    >
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button
+                                            class="btn btn-sm btn-icon"
+                                            data-bs-toggle="dropdown"
+                                        >
+                                            <i
+                                                class="bx bx-dots-vertical-rounded"
+                                            ></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >View Details</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >Edit Booking</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item text-danger"
+                                                    href="#"
+                                                    >Cancel</a
+                                                >
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="booking-item">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div
+                                            class="avatar avatar-sm bg-info-subtle me-2"
+                                        >
+                                            RJ
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">
+                                                Robert Johnson
+                                            </h6>
+                                            <small class="text-muted"
+                                                >robert@example.com</small
+                                            >
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-medium">Junior Suite</span>
+                                </td>
+                                <td>
+                                    <span>Apr 30, 2025</span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-success-subtle"
+                                        >Confirmed</span
+                                    >
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button
+                                            class="btn btn-sm btn-icon"
+                                            data-bs-toggle="dropdown"
+                                        >
+                                            <i
+                                                class="bx bx-dots-vertical-rounded"
+                                            ></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >View Details</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >Edit Booking</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item text-danger"
+                                                    href="#"
+                                                    >Cancel</a
+                                                >
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="booking-item">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div
+                                            class="avatar avatar-sm bg-warning-subtle me-2"
+                                        >
+                                            EW
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">
+                                                Emily Wilson
+                                            </h6>
+                                            <small class="text-muted"
+                                                >emily@example.com</small
+                                            >
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-medium">Standard Twin</span>
+                                </td>
+                                <td>
+                                    <span>May 1, 2025</span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-danger-subtle"
+                                        >Cancelled</span
+                                    >
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button
+                                            class="btn btn-sm btn-icon"
+                                            data-bs-toggle="dropdown"
+                                        >
+                                            <i
+                                                class="bx bx-dots-vertical-rounded"
+                                            ></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >View Details</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    >Edit Booking</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <a
+                                                    class="dropdown-item text-danger"
+                                                    href="#"
+                                                    >Delete</a
+                                                >
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div
+                class="card-header d-flex align-items-center justify-content-between"
+            >
+                <h5 class="card-title">Recent Activities</h5>
+                <button class="btn btn-sm btn-icon">
+                    <i class="bx bx-refresh"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="activity-timeline">
+                    <div class="activity-item">
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="activity-title">
+                                    New Booking Created
+                                </div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                            <p class="activity-text">
+                                John Doe booked an Executive Suite for Apr 28 -
+                                May 2, 2025
+                            </p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    View Booking
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="activity-title">
+                                    Payment Received
+                                </div>
+                                <div class="activity-time">4 hours ago</div>
+                            </div>
+                            <p class="activity-text">
+                                Payment of $785.00 received for booking #1042
+                            </p>
+                            <div class="d-flex gap-2">
+                                <span
+                                    class="badge bg-success-subtle"
+                                    >Confirmed</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="activity-title">
+                                    Room Status Updated
+                                </div>
+                                <div class="activity-time">Yesterday</div>
+                            </div>
+                            <p class="activity-text">
+                                Room 405 status changed from 'Maintenance' to
+                                'Available'
+                            </p>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-info-subtle"
+                                    >Room 405</span
+                                >
+                                <span
+                                    class="badge bg-success-subtle"
+                                    >Available</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="activity-title">
+                                    New Staff Added
+                                </div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                            <p class="activity-text">
+                                Maria Rodriguez was added as new Receptionist
+                            </p>
+                            <div class="d-flex gap-2">
+                                <button
+                                    class="btn btn-sm btn-outline-secondary"
+                                >
+                                    View Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Function to get CSS variable value
+    function getCssVariable(variable) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+    }
+
+    // Initialize charts after DOM is fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get theme colors from CSS variables
+        const primaryColor = getCssVariable('--primary');
+        const successColor = getCssVariable('--success');
+        const warningColor = getCssVariable('--warning');
+        const dangerColor = getCssVariable('--danger');
+        const infoColor = getCssVariable('--info');
+        const grayColor = getCssVariable('--gray');
+        const grayDarkColor = getCssVariable('--gray-dark');
+        const cardBgColor = getCssVariable('--card-bg');
+        const borderColor = getCssVariable('--border-color');
+        const primaryRgb = getCssVariable('--primary-rgb');
+        const bodyColor = getCssVariable('--dark'); // Main text color
+
+        // Chart.js Global Defaults (Optional: Refine based on theme)
+        Chart.defaults.font.family = getCssVariable('--font-primary');
+        Chart.defaults.color = grayColor; // Default text color for charts
+        Chart.defaults.borderColor = borderColor; // Default border color
+
+        // Tooltip Defaults
+        const defaultTooltipOptions = {
+            enabled: true,
+            backgroundColor: cardBgColor, // Use card background
+            titleColor: bodyColor, // Use main text color
+            bodyColor: grayDarkColor, // Use darker gray for body
+            borderColor: borderColor,
+            borderWidth: 1,
+            padding: 12,
+            boxPadding: 8,
+            usePointStyle: true,
+            titleFont: { weight: '600', family: getCssVariable('--font-heading') },
+            bodyFont: { size: 13 },
+            cornerRadius: parseFloat(getCssVariable('--border-radius')) * 10 || 6, // Match border radius
+            // Add subtle shadow
+            // Note: Chart.js tooltip shadow requires custom drawing or plugins
+        };
+
+        // Scales Defaults
+        const defaultScalesOptions = {
+            x: {
+                grid: {
+                    display: false, // Cleaner look
+                    drawBorder: false,
+                },
+                ticks: {
+                    color: grayColor,
+                    font: { size: 11 },
+                },
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: borderColor, // Use theme border color
+                    drawBorder: false,
+                    borderDash: [3, 3], // Subtle dash
+                },
+                ticks: {
+                    color: grayColor,
+                    font: { size: 11 },
+                    padding: 10, // Add padding
+                },
+            },
+        };
+
+
+        // Revenue Chart
+        const revenueCtx = document.getElementById("revenueChart")?.getContext("2d");
+        if (revenueCtx) {
+            const revenueChart = new Chart(revenueCtx, {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "Revenue",
+                        data: [35000, 38000, 42000, 48000, 52000, 58000, 62000, 68000, 64000, 58000, 52000, 48000],
+                        borderColor: primaryColor,
+                        backgroundColor: `rgba(${primaryRgb}, 0.1)`,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: cardBgColor, // Match background
+                        pointBorderColor: primaryColor,
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: primaryColor,
+                        pointHoverBorderColor: cardBgColor, // Match background
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...defaultTooltipOptions,
+                            callbacks: {
+                                label: (context) => ` Revenue: $${context.parsed.y.toLocaleString()}`,
+                                labelPointStyle: () => ({ pointStyle: 'circle', rotation: 0 }),
+                            },
+                        },
+                    },
+                    scales: {
+                        ...defaultScalesOptions,
+                        y: {
+                            ...defaultScalesOptions.y,
+                            ticks: {
+                                ...defaultScalesOptions.y.ticks,
+                                callback: (value) => "$" + value / 1000 + "k",
+                            },
+                            stepSize: 10000,
+                        }
+                    },
+                    interaction: { mode: "index", intersect: false },
+                },
+            });
+            window.revenueChart = revenueChart; // Make accessible if needed
+        }
+
+
+        // Bookings Chart
+        const bookingsCtx = document.getElementById("bookingsChart")?.getContext("2d");
+        if (bookingsCtx) {
+            const bookingsChart = new Chart(bookingsCtx, {
+                type: "bar",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "Bookings",
+                        data: [65, 78, 80, 87, 92, 110, 125, 132, 115, 100, 90, 85],
+                        backgroundColor: `rgba(${primaryRgb}, 0.75)`,
+                        borderColor: primaryColor,
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        hoverBackgroundColor: primaryColor,
+                        maxBarThickness: 18,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...defaultTooltipOptions,
+                            callbacks: {
+                                label: (context) => ` Bookings: ${context.parsed.y}`,
+                            },
+                        },
+                    },
+                    scales: defaultScalesOptions,
+                },
+            });
+            window.bookingsChart = bookingsChart; // Make accessible
+        }
+
+
+        // Occupancy Chart
+        const occupancyCtx = document.getElementById("occupancyChart")?.getContext("2d");
+        if (occupancyCtx) {
+            const occupancyChart = new Chart(occupancyCtx, {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "Occupancy Rate",
+                        data: [65, 70, 75, 78, 82, 90, 95, 92, 88, 84, 75, 72],
+                        borderColor: infoColor,
+                        backgroundColor: `rgba(${primaryRgb}, 0.1)`, // Use info-rgb if defined, else fallback
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: cardBgColor,
+                        pointBorderColor: infoColor,
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: infoColor,
+                        pointHoverBorderColor: cardBgColor,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...defaultTooltipOptions,
+                            callbacks: {
+                                label: (context) => ` Occupancy: ${context.parsed.y}%`,
+                                labelPointStyle: () => ({ pointStyle: 'circle', rotation: 0 }),
+                            },
+                        },
+                    },
+                    scales: {
+                        ...defaultScalesOptions,
+                        y: {
+                            ...defaultScalesOptions.y,
+                            beginAtZero: false,
+                            min: 50,
+                            max: 100,
+                            ticks: {
+                                ...defaultScalesOptions.y.ticks,
+                                callback: (value) => value + "%",
+                            },
+                            stepSize: 10,
+                        }
+                    },
+                    interaction: { mode: "index", intersect: false },
+                },
+            });
+            window.occupancyChart = occupancyChart; // Make accessible
+        }
+
+
+        // Room Status Chart
+        const roomStatusCtx = document.getElementById("roomStatusChart")?.getContext("2d");
+        if (roomStatusCtx) {
+            const roomStatusChart = new Chart(roomStatusCtx, {
+                type: "doughnut",
+                data: {
+                    labels: ["Occupied", "Available", "Reserved", "Maintenance"],
+                    datasets: [{
+                        data: [45, 32, 18, 5],
+                        backgroundColor: [
+                            primaryColor,
+                            successColor,
+                            warningColor,
+                            grayColor, // Use theme gray
+                        ],
+                        borderWidth: 4,
+                        borderColor: cardBgColor, // Match card background
+                        hoverOffset: 8,
+                        hoverBorderColor: cardBgColor,
+                        hoverBorderWidth: 4,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "75%",
+                    plugins: {
+                        legend: { display: false }, // Using custom legend below chart
+                        tooltip: {
+                            ...defaultTooltipOptions,
+                            callbacks: {
+                                label: (context) => ` ${context.label}: ${context.parsed}%`,
+                                labelPointStyle: (context) => {
+                                    const dataset = context.chart.data.datasets[0];
+                                    return {
+                                        pointStyle: 'rectRounded',
+                                        rotation: 0,
+                                        fillStyle: dataset.backgroundColor[context.dataIndex],
+                                        strokeStyle: dataset.backgroundColor[context.dataIndex],
+                                    };
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+            window.roomStatusChart = roomStatusChart; // Make accessible
+        }
+
+
+        // Handle tab changes to resize charts if they exist
+        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((tab) => {
+            tab.addEventListener("shown.bs.tab", function (event) {
+                const targetId = event.target.getAttribute('data-bs-target');
+                let chartToResize;
+                if (targetId === '#revenue' && window.revenueChart) chartToResize = window.revenueChart;
+                else if (targetId === '#bookings' && window.bookingsChart) chartToResize = window.bookingsChart;
+                else if (targetId === '#occupancy' && window.occupancyChart) chartToResize = window.occupancyChart;
+
+                // Add a small delay to ensure the container is visible and sized correctly
+                if (chartToResize) {
+                    setTimeout(() => chartToResize.resize(), 50);
+                }
+            });
+        });
+
+        // Update chart colors on theme change
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            // Use MutationObserver to detect theme changes on the <html> element
+            const observer = new MutationObserver((mutationsList) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        // Re-fetch colors and update charts
+                        const newPrimaryColor = getCssVariable('--primary');
+                        const newSuccessColor = getCssVariable('--success');
+                        // ... fetch other colors ...
+                        const newCardBgColor = getCssVariable('--card-bg');
+                        const newBorderColor = getCssVariable('--border-color');
+                        const newGrayColor = getCssVariable('--gray');
+                        const newBodyColor = getCssVariable('--dark');
+                        const newGrayDarkColor = getCssVariable('--gray-dark');
+
+                        // Update Revenue Chart
+                        if (window.revenueChart) {
+                            const revenueDataset = window.revenueChart.data.datasets[0];
+                            revenueDataset.borderColor = newPrimaryColor;
+                            revenueDataset.backgroundColor = `rgba(${getCssVariable('--primary-rgb')}, 0.1)`;
+                            revenueDataset.pointBorderColor = newPrimaryColor;
+                            revenueDataset.pointHoverBackgroundColor = newPrimaryColor;
+                            revenueDataset.pointBackgroundColor = newCardBgColor; // Update point background
+                            revenueDataset.pointHoverBorderColor = newCardBgColor; // Update hover point background
+                            window.revenueChart.options.plugins.tooltip.backgroundColor = newCardBgColor;
+                            window.revenueChart.options.plugins.tooltip.titleColor = newBodyColor;
+                            window.revenueChart.options.plugins.tooltip.bodyColor = newGrayDarkColor;
+                            window.revenueChart.options.plugins.tooltip.borderColor = newBorderColor;
+                            window.revenueChart.options.scales.x.ticks.color = newGrayColor;
+                            window.revenueChart.options.scales.y.ticks.color = newGrayColor;
+                            window.revenueChart.options.scales.y.grid.color = newBorderColor;
+                            window.revenueChart.update();
+                        }
+                        // Update Bookings Chart
+                        if (window.bookingsChart) {
+                            const bookingsDataset = window.bookingsChart.data.datasets[0];
+                            bookingsDataset.backgroundColor = `rgba(${getCssVariable('--primary-rgb')}, 0.75)`;
+                            bookingsDataset.borderColor = newPrimaryColor;
+                            bookingsDataset.hoverBackgroundColor = newPrimaryColor;
+                            window.bookingsChart.options.plugins.tooltip.backgroundColor = newCardBgColor;
+                            window.bookingsChart.options.plugins.tooltip.titleColor = newBodyColor;
+                            window.bookingsChart.options.plugins.tooltip.bodyColor = newGrayDarkColor;
+                            window.bookingsChart.options.plugins.tooltip.borderColor = newBorderColor;
+                            window.bookingsChart.options.scales.x.ticks.color = newGrayColor;
+                            window.bookingsChart.options.scales.y.ticks.color = newGrayColor;
+                            window.bookingsChart.options.scales.y.grid.color = newBorderColor;
+                            window.bookingsChart.update();
+                        }
+                        // Update Occupancy Chart
+                        if (window.occupancyChart) {
+                            const occupancyDataset = window.occupancyChart.data.datasets[0];
+                            const newInfoColor = getCssVariable('--info');
+                            occupancyDataset.borderColor = newInfoColor;
+                            occupancyDataset.backgroundColor = `rgba(${getCssVariable('--info-rgb')}, 0.1)`;
+                            occupancyDataset.pointBorderColor = newInfoColor;
+                            occupancyDataset.pointHoverBackgroundColor = newInfoColor;
+                            occupancyDataset.pointBackgroundColor = newCardBgColor;
+                            occupancyDataset.pointHoverBorderColor = newCardBgColor;
+                            window.occupancyChart.options.plugins.tooltip.backgroundColor = newCardBgColor;
+                            window.occupancyChart.options.plugins.tooltip.titleColor = newBodyColor;
+                            window.occupancyChart.options.plugins.tooltip.bodyColor = newGrayDarkColor;
+                            window.occupancyChart.options.plugins.tooltip.borderColor = newBorderColor;
+                            window.occupancyChart.options.scales.x.ticks.color = newGrayColor;
+                            window.occupancyChart.options.scales.y.ticks.color = newGrayColor;
+                            window.occupancyChart.options.scales.y.grid.color = newBorderColor;
+                            window.occupancyChart.update();
+                        }
+                        // Update Room Status Chart
+                        if (window.roomStatusChart) {
+                            const roomStatusDataset = window.roomStatusChart.data.datasets[0];
+                            roomStatusDataset.backgroundColor = [
+                                newPrimaryColor,
+                                newSuccessColor,
+                                getCssVariable('--warning'),
+                                newGrayColor,
+                            ];
+                            roomStatusDataset.borderColor = newCardBgColor;
+                            roomStatusDataset.hoverBorderColor = newCardBgColor;
+                            window.roomStatusChart.options.plugins.tooltip.backgroundColor = newCardBgColor;
+                            window.roomStatusChart.options.plugins.tooltip.titleColor = newBodyColor;
+                            window.roomStatusChart.options.plugins.tooltip.bodyColor = newGrayDarkColor;
+                            window.roomStatusChart.options.plugins.tooltip.borderColor = newBorderColor;
+                            window.roomStatusChart.update();
+                        }
+                    }
+                }
+            });
+            observer.observe(document.documentElement, { attributes: true });
+        }
+
+    });
+</script>
 {% endblock %}

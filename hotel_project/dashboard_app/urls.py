@@ -20,12 +20,12 @@ urlpatterns = [
 
     path('', views.DashboardHomeView.as_view(), name='dashboard_home'),
     # User management URLs
-    path('users/', views.UserListView.as_view(), name='users'),
+    path('users/', views.UserListView.as_view(), name='user_list'),
     path('users/add/', views.UserCreateView.as_view(), name='user_add'),
     path('users/<int:pk>/edit/', views.UserUpdateView.as_view(), name='user_edit'),
     path('users/<int:pk>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
     # Room management URLs
-    path('rooms/', views.RoomListView.as_view(), name='rooms'),
+    path('rooms/', views.RoomListView.as_view(), name='room_list'),
     path('rooms/add/', views.RoomCreateView.as_view(), name='room_add'),
     path('rooms/<int:pk>/edit/', views.RoomUpdateView.as_view(), name='room_edit'),
     path('rooms/<int:pk>/delete/', views.RoomDeleteView.as_view(), name='room_delete'),

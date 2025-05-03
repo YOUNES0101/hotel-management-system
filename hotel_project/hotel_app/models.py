@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
@@ -14,7 +15,11 @@ class CustomUser(AbstractUser):
         return self.email
 
 
-class room(models.Model):
+def get_room_image_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/rooms/<room_id>/<filename>
+    return os.path.join('rooms', str(instance.id), filename)
+
+class room(models.Model): # Renamed class to Room
     room_number = models.CharField(max_length=10, unique=True)
     room_type = models.CharField(max_length=50)
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
@@ -22,7 +27,7 @@ class room(models.Model):
     capacity = models.IntegerField()
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(
-        upload_to='hotel_app/static/dashboard_app/images/' or 'hotel_app/static/hotel_app/images/rooms/',
+        upload_to=get_room_image_path, # Use the function here
         blank=True,
         null=True,
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]
@@ -34,7 +39,7 @@ class room(models.Model):
 
 class reservation(models.Model):
     client = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    room = models.ForeignKey(room, on_delete=models.CASCADE)
+    room = models.ForeignKey(room, on_delete=models.CASCADE) # Updated ForeignKey to Room
     check_in_date = models.DateField()
     check_out_date = models.DateField()
 

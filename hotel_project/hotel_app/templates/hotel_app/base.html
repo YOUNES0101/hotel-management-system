@@ -1,0 +1,2321 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %}HORIZONH - Luxury Hotel Experience{% endblock %}
+        </title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Icons -->
+        <link
+            href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+            rel="stylesheet"
+        />
+
+        <!-- Base CSS -->
+        <style>
+            :root {
+                /* Color Palette */
+                --color-primary: #876a3b; /* Muted Gold */
+                --color-primary-light: #b89c60; /* Lighter Gold */
+                --color-primary-dark: #604b2a; /* Darker Gold */
+                --color-accent: #0f4c5c; /* Deep Teal */
+                --color-light: #f5f3ef; /* Ivory */
+                --color-dark: #141311; /* Off Black */
+                --color-grey: #8e8e8e; /* Neutral Grey */
+                --color-beige: #e8e5de; /* Dune Beige */
+                --color-slate: #4a5568; /* Slate Gray */
+
+                /* Typography */
+                --font-serif: "Playfair Display", serif;
+                --font-sans: "Inter", sans-serif;
+
+                /* Enhanced Transitions */
+                --transition-slow: 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+                --transition-medium: 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+                --transition-fast: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+                --transition-navbar: 1.2s cubic-bezier(0.17, 0.86, 0.47, 1); /* Adjusted timing */
+                --transition-logo-color: 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+                --transition-logo-duration: 1.2s;
+                --ease-logo: cubic-bezier(0.5, 0.01, 0.01, 1); /* Custom easing */
+
+                /* Animation Easings */
+                --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+                --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+                --ease-slide: cubic-bezier(0.17, 0.86, 0.47, 1);
+                --ease-luxury: cubic-bezier(0.76, 0, 0.24, 1);
+            }
+
+            /* Reset & Base */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: var(--font-sans);
+                color: var(--color-dark);
+                background-color: var(--color-light);
+                line-height: 1.5;
+                overflow-x: hidden;
+            }
+
+            /* Typography */
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                font-family: var(--font-serif);
+                font-weight: 500;
+                letter-spacing: -0.02em;
+                line-height: 1.2;
+            }
+
+            h1 {
+                font-size: clamp(2.5rem, 6vw, 4rem);
+                margin-bottom: 1.5rem;
+            }
+
+            h2 {
+                font-size: clamp(2rem, 4vw, 3rem);
+                margin-bottom: 1.25rem;
+            }
+
+            h3 {
+                font-size: clamp(1.5rem, 3vw, 2rem);
+                margin-bottom: 1rem;
+            }
+
+            p {
+                margin-bottom: 1.5rem;
+                font-weight: 300;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+                transition: color var(--transition-fast);
+            }
+
+            .uppercase {
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+            }
+
+            .thin-text {
+                font-weight: 300;
+            }
+
+            /* Container */
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 1.5rem;
+            }
+
+            /* Header & Navigation */
+            .header {
+                position: absolute; /* Changed to absolute initially */
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 100;
+                padding: 0; /* Remove initial padding, height controls spacing */
+                height: 80px; /* Initial height */
+                transition: height var(--transition-logo-duration) var(--ease-logo),
+                            background-color var(--transition-logo-duration) var (--ease-logo),
+                            box-shadow var(--transition-logo-duration) var(--ease-logo),
+                            backdrop-filter var(--transition-logo-duration) var(--ease-logo);
+                will-change: height, background-color, box-shadow, backdrop-filter;
+                display: flex; /* Use flex to center container vertically */
+                align-items: center; /* Center container vertically */
+                background: transparent; /* Ensure transparent initially */
+                box-shadow: none; /* Ensure no shadow initially */
+            }
+
+            .header.scrolled {
+                position: fixed;
+                background-color: rgba(245, 243, 239, 0.95); /* Solid background */
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                height: 72px; /* Final height */
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            }
+
+            .header__container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                /* Removed position: relative; as logo is gone */
+                width: 100%; /* Ensure container takes full width */
+                max-width: 1400px; /* Match .container max-width */
+                margin: 0 auto;
+                padding: 0 1.5rem; /* Maintain horizontal padding */
+            }
+
+            .nav--left {
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+            }
+
+            /* --- REMOVED LOGO STYLES --- */
+            /* Removed .logo, .logo__letters, .logo__letter, .logo__link-overlay styles */
+            /* Removed .header.scrolled .logo, .header.scrolled .logo__letter styles */
+
+            /* Placeholder for the animated logo */
+            .logo-placeholder {
+                flex-grow: 0;
+                flex-shrink: 0;
+                display: flex; /* Use flex to align potential future content */
+                align-items: center;
+                justify-content: center;
+                /* Define approximate width based on final logo size */
+                /* Example: 8 letters * ~15px width + ~1px margin = ~128px */
+                width: 130px; /* Adjust as needed */
+                height: 100%; /* Take full height of header */
+                transition: width var(--transition-medium); /* Optional: if width changes */
+                /* Initially hidden or takes no space if letters aren't there */
+                opacity: 0; /* Hide placeholder itself initially */
+                pointer-events: none; /* Placeholder not interactive */
+            }
+
+            .header.scrolled .logo-placeholder {
+                 opacity: 1; /* Placeholder area becomes visible/active when scrolled */
+                 pointer-events: auto; /* Allow events if needed later */
+            }
+
+
+            /* Adjust nav link color for initial state */
+            .header:not(.scrolled) .nav__link,
+            .header:not(.scrolled) .auth-btn,
+            .header:not(.scrolled) .profile-link,
+            .header:not(.scrolled) .mobile-nav-toggle {
+                color: white;
+                text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            }
+            .header:not(.scrolled) .auth-divider {
+                 background-color: rgba(255, 255, 255, 0.3);
+            }
+             .header:not(.scrolled) .profile-avatar {
+                 background-color: rgba(255, 255, 255, 0.8);
+                 color: var(--color-primary);
+             }
+             .header:not(.scrolled) .btn--primary {
+                 /* Keep primary button visible */
+                 color: white;
+                 border-color: white;
+             }
+             .header:not(.scrolled) .btn--primary:hover {
+                 background-color: rgba(255, 255, 255, 0.1);
+                 color: white;
+             }
+
+
+            /* Adjust flex distribution when logo placeholder is present */
+            .header:not(.scrolled) .nav--left {
+                margin-right: auto; /* Push right content over */
+            }
+
+            .header:not(.scrolled) .header__right-content {
+                margin-left: auto; /* Push left content over */
+            }
+
+            /* Reset margins when header is scrolled */
+            .header.scrolled .nav--left,
+            .header.scrolled .header__right-content {
+                margin: 0;
+            }
+            /* Ensure placeholder sits correctly between navs when scrolled */
+            .header.scrolled .nav--left { flex: 1; justify-content: flex-start; }
+            .header.scrolled .logo-placeholder { flex-grow: 0; flex-shrink: 0; } /* Takes its defined width */
+            .header.scrolled .header__right-content { flex: 1; justify-content: flex-end; }
+
+
+            .header__right-content {
+                /* flex: 1; */ /* Adjusted in .scrolled state */
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 3.5rem;
+            }
+
+            .nav--right {
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            .nav__menu {
+                display: flex;
+                list-style: none;
+                gap: 2.5rem;
+                align-items: center; /* Vertically align items */
+            }
+
+            .nav__menu--left {
+                justify-content: flex-start; /* Align items to the start (left) */
+                margin-right: auto; /* Push logo and right nav away */
+            }
+
+            .nav__menu--right {
+                justify-content: flex-end; /* Align items to the end (right) */
+                margin-left: auto; /* Push logo and left nav away */
+            }
+
+            /* Enhance hover interactions for nav links */
+            .nav__link {
+                position: relative;
+                font-family: var(--font-sans);
+                font-size: 0.9rem;
+                font-weight: 700;
+                padding: 0.25rem 0;
+                color: white;
+                text-transform: uppercase;
+                transition: color var(--transition-fast), transform 0.4s var(--ease-bounce);
+                opacity: 0.95;
+                letter-spacing: 0.05em;
+            }
+
+            .header.scrolled .nav__link {
+                color: var(--color-dark);
+            }
+
+            .nav__link:hover {
+                opacity: 1;
+                transform: translateY(-3px);
+            }
+
+            .nav__link:after {
+                content: "";
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 0;
+                height: 1px;
+                background-color: var (--color-primary);
+                transition: width 0.4s var(--ease-luxury);
+                transform-origin: left center;
+            }
+
+            .nav__link:hover:after,
+            .nav__link.active:after {
+                width: 100%;
+            }
+
+            /* Book Now Button */
+            .btn {
+                display: inline-block;
+                padding: 0.75rem 1.5rem;
+                font-weight: 500;
+                font-size: 0.9rem;
+                text-align: center;
+                border-radius: 0;
+                transition: all var(--transition-medium);
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                z-index: 1;
+            }
+
+            .btn--primary {
+                background-color: var(--color-primary); /* Gold color */
+                color: white;
+                border: 1px solid var(--color-primary);
+                font-family: var(--font-sans); /* Ensure sans-serif */
+                font-weight: 700; /* Bold */
+                text-transform: uppercase; /* Uppercase */
+                transition: background-color var(--transition-medium),
+                    color var(--transition-medium),
+                    transform var(--transition-medium);
+            }
+
+            .btn--primary::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.2);
+                transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+                z-index: -1;
+            }
+
+            .btn--primary:hover::before {
+                left: 100%;
+            }
+
+            .btn--primary:hover {
+                background-color: transparent;
+                color: var(--color-primary);
+                transform: translateY(-2px);
+            }
+
+            .header__actions {
+                display: flex; /* Make it a flex container */
+                align-items: center; /* Vertically align items */
+                gap: 1rem; /* Restore gap between items */
+            }
+
+            .auth-btn {
+                font-family: var(--font-sans); /* Sans-serif font */
+                font-size: 0.9rem;
+                font-weight: 700; /* Bold font weight */
+                color: white;
+                text-transform: uppercase; /* Uppercase text */
+                transition: color var(--transition-fast), transform 0.3s ease;
+                cursor: pointer;
+            }
+
+            .auth-btn:hover {
+                transform: translateY(-2px);
+            }
+
+            .header.scrolled .auth-btn {
+                color: var(--color-dark);
+            }
+
+            .auth-divider {
+                width: 1px;
+                height: 16px;
+                background-color: rgba(255, 255, 255, 0.3);
+                transition: background-color var(--transition-fast);
+            }
+
+            .header.scrolled .auth-divider {
+                background-color: rgba(20, 19, 17, 0.2);
+            }
+
+            /* Language Selector */
+            .lang-selector {
+                position: relative;
+                margin-left: 1.5rem;
+                z-index: 10;
+            }
+
+            .lang-selector__current {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                cursor: pointer;
+                font-family: var(--font-sans); /* Sans-serif font */
+                font-size: 0.9rem;
+                font-weight: 700; /* Bold font weight */
+                color: white;
+                text-transform: uppercase; /* Uppercase text */
+                transition: color var(--transition-fast), transform 0.3s ease;
+            }
+
+            .lang-selector__current:hover {
+                transform: translateY(-2px);
+            }
+
+            .header.scrolled .lang-selector__current {
+                color: var(--color-dark);
+            }
+
+            .lang-selector__dropdown {
+                position: absolute;
+                top: 100%;
+                right: -10px;
+                margin-top: 0.75rem;
+                background-color: white;
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+                padding: 0.75rem 0;
+                min-width: 120px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(10px);
+                transition: all var(--transition-medium),
+                    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            .lang-selector:hover .lang-selector__dropdown {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .lang-selector__option {
+                display: block;
+                padding: 0.5rem 1.5rem;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+
+            .lang-selector__option:hover {
+                background-color: rgba(135, 106, 59, 0.05);
+                color: var (--color-primary);
+                padding-left: 1.8rem;
+            }
+
+            /* Mobile navigation */
+            .mobile-nav-toggle {
+                display: none;
+                background: transparent;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                z-index: 1001;
+                color: white;
+                transition: color var(--transition-fast), transform 0.3s ease;
+            }
+
+            .mobile-nav-toggle:hover {
+                transform: rotate(10deg);
+            }
+
+            .header.scrolled .mobile-nav-toggle {
+                color: var(--color-dark);
+            }
+
+            /* Footer */
+            .footer {
+                background-color: var(--color-beige);
+                padding: 4rem 0 3rem;
+            }
+
+            .footer__container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            .footer__column {
+                flex: 1;
+                min-width: 200px;
+                margin-right: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .footer__logo {
+                font-family: var(--font-serif);
+                font-size: 1.75rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+
+            .footer__links {
+                list-style: none;
+                margin-bottom: 2rem;
+            }
+
+            .footer__link {
+                display: inline-block;
+                margin-bottom: 0.5rem;
+                color: var(--color-dark);
+                opacity: 0.8;
+                font-size: 0.9rem;
+            }
+
+            .footer__link:hover {
+                opacity: 1;
+                color: var(--color-primary);
+            }
+
+            .footer__social {
+                display: flex;
+                gap: 1.5rem;
+                font-size: 1.25rem;
+            }
+
+            .footer__bottom {
+                border-top: 1px solid rgba(20, 19, 17, 0.1);
+                padding-top: 2rem;
+                margin-top: 2rem;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.85rem;
+                opacity: 0.7;
+                gap: 1rem;
+            }
+
+            .footer__copyright {
+                margin-right: auto;
+            }
+
+            .footer__utility {
+                display: flex;
+                gap: 1.5rem;
+            }
+
+            /* Newsletter */
+            .newsletter {
+                max-width: 400px;
+            }
+
+            .newsletter__form {
+                display: flex;
+                margin-top: 1rem;
+            }
+
+            .newsletter__input {
+                flex: 1;
+                padding: 0.75rem 1rem;
+                border: none;
+                background-color: white;
+                font-family: var(--font-sans);
+                font-size: 0.9rem;
+            }
+
+            .newsletter__input:focus {
+                outline: none;
+            }
+
+            .newsletter__btn {
+                background-color: var(--color-primary);
+                color: white;
+                border: none;
+                padding: 0 1rem;
+                cursor: pointer;
+                transition: background-color var(--transition-fast);
+            }
+
+            .newsletter__btn:hover {
+                background-color: var(--color-dark);
+            }
+
+            /* Responsive */
+            @media (max-width: 992px) {
+                .header__container {
+                    padding: 0 1rem; /* Adjust padding for mobile */
+                }
+
+                .nav {
+                    display: none; /* Hide desktop nav menus */
+                }
+                .nav--left, .nav--right {
+                    display: none;
+                }
+
+                /* Mobile Nav Active State */
+                .nav.active {
+                    display: flex;
+                    flex-direction: column;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: var (--color-light);
+                    z-index: 1000;
+                    padding: 5rem 2rem;
+                    align-items: center;
+                    animation: fadeIn 0.4s ease forwards;
+                }
+
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                    }
+                    to {
+                        opacity: 1;
+                    }
+                }
+
+                .nav__menu {
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1.5rem;
+                    margin: 2rem 0;
+                }
+
+                .nav__menu--left,
+                .nav__menu--right {
+                    margin: 0;
+                }
+
+                .mobile-nav-toggle {
+                    display: block; /* Ensure toggle is shown */
+                }
+
+                .header__actions {
+                    /* Hide complex actions on mobile header, rely on opened menu */
+                    /* display: none; */ /* Or adjust layout significantly */
+                     gap: 1rem; /* Reduce gap */
+                }
+                .header__actions .btn--primary {
+                    display: none; /* Hide book now button in header on mobile */
+                }
+                .header__actions .auth-btn,
+                .header__actions .auth-divider {
+                    display: none; /* Hide auth buttons in header on mobile */
+                }
+                 .profile-dropdown {
+                     /* Keep profile dropdown */
+                 }
+
+
+                .lang-selector {
+                    /* display: none; */ /* Hide lang selector in header on mobile */
+                     margin-left: 0; /* Reset margin */
+                }
+
+                /* Scrolled Mobile Header Logo Position */
+                /* Remove old logo positioning */
+                /* .header.scrolled .logo { ... } */
+
+                /* Adjust layout for placeholder on mobile */
+                 .header.scrolled .logo-placeholder {
+                     /* Maybe hide placeholder or give it less space on mobile? */
+                     /* Or ensure it's positioned correctly */
+                     order: -1; /* Place it before right content if needed */
+                     width: auto; /* Let it shrink */
+                     margin-right: auto; /* Push right content */
+                 }
+
+                .header.scrolled .header__right-content {
+                    /* Adjust flex properties if placeholder changes order */
+                    justify-content: flex-end;
+                }
+                /* ... rest of responsive styles ... */
+            }
+
+            @media (max-width: 768px) {
+                .footer__column {
+                    flex-basis: 100%;
+                    margin-right: 0;
+                }
+
+                .footer__bottom {
+                    flex-direction: column-reverse;
+                    align-items: flex-start;
+                }
+
+                .footer__copyright {
+                    margin-right: 0;
+                    margin-top: 1rem;
+                }
+                /* Remove old logo letter size adjustments */
+                /* .logo__letter { ... } */
+                /* .header.scrolled .logo__letter { ... } */
+                 .header.scrolled .logo-placeholder {
+                     /* Further adjustments if needed */
+                 }
+                /* ... rest of responsive styles ... */
+            }
+
+            /* Custom Cursor */
+            .cursor-dot,
+            .cursor-outline {
+                pointer-events: none;
+                position: fixed;
+                z-index: 9999;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .cursor-dot {
+                width: 8px;
+                height: 8px;
+                background-color: var(--color-primary);
+            }
+
+            .cursor-outline {
+                width: 40px;
+                height: 40px;
+                border: 1px solid var(--color-primary);
+                transition: width 0.2s ease, height 0.2s ease;
+            }
+
+            body:hover .cursor-dot,
+            body:hover .cursor-outline {
+                opacity: 1;
+            }
+
+            /* Modal Styles for Login & Signup - Luxury Edition */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+
+            .modal-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .auth-modal {
+                background-color: white;
+                max-width: 520px;
+                width: 90%;
+                max-height: 90vh;
+                display: flex;
+                flex-direction: column;
+                border-radius: 0;
+                overflow: hidden;
+                box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.35);
+                opacity: 0;
+                transform: translateY(25px);
+                transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                border: 1px solid rgba(135, 106, 59, 0.15);
+                position: relative;
+            }
+
+            /* Gold decorative element */
+            .auth-modal::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--color-primary) 0%, #b89c60 50%, var(--color-primary) 100%);
+            }
+
+            /* Decorative corner accents */
+            .auth-modal::after {
+                content: '';
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                border-top: 2px solid var(--color-primary);
+                border-right: 2px solid var(--color-primary);
+                opacity: 0.6;
+            }
+
+            .auth-modal:before {
+                content: '';
+                position: absolute;
+                bottom: 20px;
+                left: 20px;
+                width: 40px;
+                height: 40px;
+                border-bottom: 2px solid var(--color-primary);
+                border-left: 2px solid var(--color-primary);
+                opacity: 0.6;
+                z-index: 100;
+            }
+
+            .modal-overlay.active .auth-modal {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .auth-modal__header {
+                padding: 2.5rem 3rem 0;
+                text-align: center;
+                position: relative;
+            }
+
+            .auth-modal__title {
+                font-family: var(--font-serif);
+                font-size: 2rem;
+                margin-bottom: 0.75rem;
+                background: linear-gradient(45deg, var(--color-primary), #b89c60);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-fill-color: transparent;
+                letter-spacing: -0.01em;
+            }
+
+            .auth-modal__subtitle {
+                color: var(--color-slate);
+                font-weight: 300;
+                margin-bottom: 2rem;
+                font-size: 0.95rem;
+            }
+
+            .auth-modal__close {
+                position: absolute;
+                top: 1.5rem;
+                right: 1.5rem;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--color-slate);
+                cursor: pointer;
+                transition: transform 0.3s var(--ease-bounce), color 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+            }
+
+            .auth-modal__close:hover {
+                transform: rotate(90deg);
+                color: var(--color-primary);
+            }
+
+            .auth-modal__body {
+                padding: 0 3rem 2.5rem;
+                overflow-y: auto;
+                flex-grow: 1;
+                position: relative;
+            }
+
+            /* Luxury tabs for login/signup switch */
+            .auth-tabs {
+                display: flex;
+                border-bottom: 1px solid rgba(135, 106, 59, 0.15);
+                margin-bottom: 2.2rem;
+                position: relative;
+            }
+
+            /* Gold indicator line that moves with tab selection */
+            .auth-tabs:after {
+                content: '';
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                width: 50%;
+                height: 2px;
+                background: linear-gradient(90deg, var(--color-primary) 0%, #b89c60 100%);
+                transform-origin: left center;
+                transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            .auth-tabs .auth-tab:nth-child(2).active ~ .auth-tabs:after {
+                transform: translateX(100%);
+            }
+
+            .auth-tab {
+                flex: 1;
+                text-align: center;
+                padding: 1.2rem 1rem;
+                cursor: pointer;
+                font-weight: 500;
+                color: var(--color-slate);
+                transition: color 0.3s ease, border-color 0.3s ease;
+                border-bottom: 2px solid transparent;
+                position: relative;
+                user-select: none;
+                letter-spacing: 0.03em;
+            }
+
+            .auth-tab.active {
+                color: var(--color-primary);
+            }
+
+            .auth-tab:hover:not(.active) {
+                color: #b89c60;
+            }
+
+            .auth-view {
+                display: none;
+                animation: fadeIn 0.5s ease forwards;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .auth-view.active {
+                display: block;
+            }
+
+            /* Luxury form styles */
+            .auth-form__group {
+                margin-bottom: 1.8rem;
+                position: relative;
+            }
+
+            .auth-form__label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+                color: var(--color-dark);
+                font-weight: 500;
+                letter-spacing: 0.02em;
+            }
+
+            .auth-form__input {
+                width: 100%;
+                padding: 0.95rem 1rem;
+                border: 1px solid #e2e8f0;
+                background-color: #f8fafc;
+                font-family: var(--font-sans);
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                border-radius: 0;
+            }
+
+            .auth-form__input:focus {
+                outline: none;
+                border-color: var(--color-primary);
+                box-shadow: 0 0 0 3px rgba(135, 106, 59, 0.1);
+                background-color: white;
+            }
+
+            /* Gold line animation on input focus */
+            .auth-form__input::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background: linear-gradient(90deg, var(--color-primary) 0%, #b89c60 100%);
+                transition: width 0.3s ease, left 0.3s ease;
+            }
+
+            .auth-form__input:focus::after {
+                width: 100%;
+                left: 0;
+            }
+
+            .auth-form__submit {
+                width: 100%;
+                padding: 1.1rem;
+                background: linear-gradient(145deg, var(--color-primary) 0%, #b89c60 100%);
+                color: white;
+                border: none;
+                font-family: var(--font-sans);
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background-position 0.8s ease;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                margin-top: 1.2rem;
+                position: relative;
+                box-shadow: 0 6px 15px -3px rgba(135, 106, 59, 0.25);
+                overflow: hidden;
+                background-size: 200% auto;
+            }
+
+            .auth-form__submit:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px -3px rgba(135, 106, 59, 0.35);
+                background-position: right center;
+            }
+
+            /* Shine effect on button */
+            .auth-form__submit::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -100%;
+                width: 70%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: rotate(25deg);
+                transition: transform 0.7s ease;
+            }
+
+            .auth-form__submit:hover::after {
+                transform: translateX(200%) rotate(25deg);
+            }
+
+            .auth-form__footer {
+                margin-top: 2rem;
+                text-align: center;
+                font-size: 0.9rem;
+                position: relative;
+            }
+
+            /* Gold decorative lines around "or" */
+            .auth-form__divider {
+                display: flex;
+                align-items: center;
+                margin: 2rem 0;
+                color: var(--color-slate);
+                font-size: 0.9rem;
+            }
+
+            .auth-form__divider::before,
+            .auth-form__divider::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(135, 106, 59, 0.3), transparent);
+            }
+
+            .auth-form__divider span {
+                padding: 0 1rem;
+            }
+
+            .auth-form__link {
+                color: var(--color-primary);
+                font-weight: 500;
+                transition: all 0.3s ease;
+                position: relative;
+                display: inline-block;
+            }
+
+            .auth-form__link:hover {
+                color: #b89c60;
+            }
+
+            /* Underline animation for links */
+            .auth-form__link::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 0;
+                height: 1px;
+                background-color: #b89c60;
+                transition: width 0.3s ease;
+            }
+
+            .auth-form__link:hover::after {
+                width: 100%;
+            }
+
+            /* Luxury social login buttons */
+            .social-login {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+
+            .social-login__btn {
+                padding: 0.85rem;
+                border: 1px solid rgba(135, 106, 59, 0.2);
+                background-color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.7rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+            .social-login__btn:hover {
+                background-color: #fcfaf5;
+                border-color: var(--color-primary);
+                transform: translateY(-2px);
+            }
+
+            .social-login__icon {
+                font-size: 1.2rem;
+                color: var(--color-primary);
+            }
+
+            /* Luxury checkbox styling */
+            .remember-forgot {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.85rem;
+                margin-top: -0.5rem;
+                margin-bottom: 1.7rem;
+            }
+
+            .auth-form__checkbox {
+                display: flex;
+                align-items: center;
+                position: relative;
+            }
+
+            .auth-form__checkbox input {
+                position: absolute;
+                opacity: 0;
+                cursor: pointer;
+                height: 0;
+                width: 0;
+            }
+
+            /* Custom checkbox */
+            .auth-form__checkbox span {
+                position: relative;
+                display: inline-block;
+                width: 18px;
+                height: 18px;
+                margin-right: 10px;
+                border: 1px solid rgba(135, 106, 59, 0.3);
+                vertical-align: middle;
+                transition: all 0.3s ease;
+            }
+
+            .auth-form__checkbox input:checked + span {
+                background-color: var(--color-primary);
+                border-color: var(--color-primary);
+            }
+
+            .auth-form__checkbox input:checked + span:after {
+                content: '';
+                position: absolute;
+                left: 6px;
+                top: 2px;
+                width: 5px;
+                height: 10px;
+                border: solid white;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+
+            .auth-form__forgot {
+                color: var(--color-slate);
+                transition: color 0.3s ease;
+                font-weight: 500;
+            }
+
+            .auth-form__forgot:hover {
+                color: var(--color-primary);
+            }
+
+            @media (max-width: 576px) {
+                .auth-modal {
+                    width: 95%;
+                }
+
+                .auth-modal__header,
+                .auth-modal__body {
+                    padding-left: 1.5rem;
+                    padding-right: 1.5rem;
+                }
+
+                .social-login {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* Profile Dropdown Styles (Add these within the <style> block) */
+            .profile-dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .profile-link {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                font-family: var(--font-sans);
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: white;
+                text-transform: uppercase;
+                transition: color var(--transition-fast), transform 0.3s ease;
+                height: 100%; /* Allow it to take full height of action bar */
+            }
+
+            .header.scrolled .profile-link {
+                color: var(--color-dark);
+            }
+
+            .profile-link:hover {
+                transform: translateY(-2px);
+            }
+
+            .profile-avatar {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                background-color: var(--color-primary);
+                color: white;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                margin-right: 0.5rem;
+                font-size: 0.9rem;
+                text-transform: uppercase;
+            }
+
+            .header.scrolled .profile-avatar {
+                background-color: var(--color-dark);
+            }
+
+            .profile-dropdown__menu {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                margin-top: 0.75rem;
+                background-color: white;
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+                padding: 0.5rem 0;
+                min-width: 180px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(10px);
+                transition: all var(--transition-medium),
+                    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                z-index: 101; /* Ensure it's above other header elements */
+                border-radius: 4px; /* Optional: Add slight rounding */
+            }
+
+            .profile-dropdown:hover .profile-dropdown__menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .profile-dropdown__item {
+                display: block;
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+                color: var(--color-dark);
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+
+            .profile-dropdown__item i {
+                margin-right: 0.75rem;
+                vertical-align: middle;
+                font-size: 1.1rem;
+                color: var (--color-slate);
+            }
+
+            .profile-dropdown__item:hover {
+                background-color: rgba(135, 106, 59, 0.05);
+                color: var(--color-primary);
+                padding-left: 1.8rem;
+            }
+
+            .profile-dropdown__item:hover i {
+                color: var(--color-primary);
+            }
+
+            .profile-dropdown__divider {
+                height: 1px;
+                background-color: #e2e8f0;
+                margin: 0.5rem 0;
+            }
+
+            @media (max-width: 992px) {
+                .profile-dropdown {
+                    /* Adjust positioning or display for mobile if necessary */
+                }
+                .profile-dropdown__menu {
+                    /* Might need different positioning on mobile */
+                    right: auto;
+                    left: 0;
+                }
+            }
+
+            /* Animation Trigger Element */
+            .scroll-trigger {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 12px; /* Trigger height within the 8-16px range */
+                z-index: -1;
+            }
+
+            /* Animated Logo Styles */
+            .animated-logo {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                transform: translateY(-50%);
+                z-index: 2;
+                text-align: center;
+                transition: opacity var(--transition-medium);
+                pointer-events: none; /* Allow clicks through logo during animation */
+            }
+
+            .animated-logo__letter-container {
+                display: inline-block;
+                position: relative;
+            }
+
+            .animated-logo__letter {
+                display: block;
+                position: absolute;
+                font-family: var(--font-serif);
+                font-weight: 600;
+                font-size: 8rem; /* Initial size */
+                color: white;
+                text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                transform-origin: center center;
+                will-change: transform, font-size, color, text-shadow;
+                transition: transform var(--transition-logo-duration) var(--ease-logo),
+                            font-size var(--transition-logo-duration) var(--ease-logo),
+                            color var(--transition-logo-duration) var(--ease-logo),
+                            text-shadow var(--transition-logo-duration) var(--ease-logo);
+            }
+
+            /* Final state for letters in scrolled position */
+            .header.scrolled .animated-logo__letter {
+                font-size: 1.5rem; /* Final size */
+                color: var(--color-primary);
+                text-shadow: none;
+            }
+
+            /* Style for clickable logo link when scrolled */
+            .animated-logo-link {
+                position: relative;
+                display: inline-block;
+                height: 100%;
+                z-index: 5;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+
+            .header.scrolled .animated-logo-link {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            /* Responsive adjustments for animated logo */
+            @media (max-width: 992px) {
+                .animated-logo__letter {
+                    font-size: 6rem; /* Smaller initial size on tablets */
+                }
+
+                .header.scrolled .animated-logo__letter {
+                    font-size: 1.3rem; /* Smaller final size on tablets */
+                }
+
+                .header.scrolled .logo-placeholder {
+                    width: 110px; /* Adjust placeholder width */
+                }
+            }
+
+            @media (max-width: 768px) {
+                .animated-logo__letter {
+                    font-size: 5rem; /* Even smaller initial size on mobile */
+                }
+
+                .header.scrolled .animated-logo__letter {
+                    font-size: 1.2rem; /* Even smaller final size on mobile */
+                }
+
+                .header.scrolled .logo-placeholder {
+                    width: 100px; /* Adjust placeholder width further */
+                }
+            }
+        </style>
+
+        <!-- Additional CSS -->
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body>
+        <!-- Custom Cursor (Enhanced Experience) -->
+        <div class="cursor-dot" id="cursor-dot"></div>
+        <div class="cursor-outline" id="cursor-outline"></div>
+
+        <!-- Scroll trigger element -->
+        <div class="scroll-trigger" id="scrollTrigger"></div>
+
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="container header__container">
+                <!-- Left Navigation -->
+                <nav class="nav nav--left">
+                    <!-- Added nav--left class -->
+                    <ul class="nav__menu nav__menu--left">
+                        <li>
+                            <a
+                                href="{% url 'home' %}"
+                                class="nav__link {% if request.path == '/' %}active{% endif %}"
+                                >HOME</a
+                            >
+                        </li>
+                        <li>
+                            <a href="#" class="nav__link">ROOMS & SUITES</a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Logo Placeholder -->
+                <div class="logo-placeholder" id="logo-placeholder">
+                    <!-- This div receives the animated logo when scrolled -->
+                    <a href="{% url 'home' %}" class="animated-logo-link">HORIZONH</a>
+                </div>
+
+                <!-- Right Content Wrapper -->
+                <div class="header__right-content">
+                    <!-- New wrapper -->
+                    <!-- Right Navigation -->
+                    <nav class="nav nav--right">
+                        <!-- Added nav--right class -->
+                        <ul class="nav__menu nav__menu--right">
+                            <li><a href="#" class="nav__link">LOCATION</a></li>
+                            <li><a href="#" class="nav__link">CONTACT</a></li>
+                        </ul>
+                    </nav>
+
+                    <!-- Auth, Book Now & Profile -->
+                    <div class="header__actions">
+                        {% if user.is_authenticated %}
+                        <div class="profile-dropdown">
+                            <a class="profile-link" href="#">
+                                <span class="profile-avatar"
+                                    >{{user.first_name|slice:":1"|default:"U"}}</span
+                                >
+                                <span class="profile-name">{{ user.first_name|default:user.email }}</span>
+                                <i
+                                    class="bx bx-chevron-down"
+                                    style="margin-left: 0.25rem"
+                                ></i>
+                            </a>
+                            <div class="profile-dropdown__menu"></div>
+                                {% if user.is_staff %}
+                                <a
+                                    href="{% url 'dashboard_home' %}"
+                                    class="profile-dropdown__item"
+                                >
+                                    <i class="bx bxs-dashboard"></i>Dashboard
+                                </a>
+                                <div class="profile-dropdown__divider"></div>
+                                {% endif %}
+                                <a href="#" class="profile-dropdown__item"
+                                    ><i class="bx bx-user"></i>My Profile</a
+                                >
+                                <a href="#" class="profile-dropdown__item"
+                                    ><i class="bx bx-calendar-check"></i>My
+                                    Bookings</a
+                                >
+                                <div class="profile-dropdown__divider"></div>
+                                <a
+                                    href="{% url 'logout' %}"
+                                    class="profile-dropdown__item"
+                                >
+                                    <i class="bx bx-log-out"></i>Logout
+                                </a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a
+                            href="#"
+                            class="auth-btn login-btn"
+                            onclick="openAuthModal('login'); return false;"
+                            >Sign In</a
+                        >
+                        <span class="auth-divider"></span>
+                        <a
+                            href="#"
+                            class="auth-btn signup-btn"
+                            onclick="openAuthModal('signup'); return false;"
+                            >Register</a
+                        >
+                        {% endif %}
+                        <a href="#" class="btn btn--primary">BOOK NOW</a>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-nav-toggle" aria-label="Toggle Menu">
+                    <i class="bx bx-menu"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Animated Logo for Hero Section -->
+        <div class="animated-logo" id="animatedLogo">
+            <!-- Letter containers will be created by JavaScript -->
+        </div>
+
+        <!-- Main Content -->
+        <main>{% block content %}{% endblock %}</main>
+
+        <!-- Auth Modals -->
+        <div class="modal-overlay" id="authModalOverlay">
+            <div class="auth-modal">
+                <button class="auth-modal__close" id="authModalClose">
+                    <i class="bx bx-x"></i>
+                </button>
+
+                <div class="auth-modal__header"></div>
+                    <h3 class="auth-modal__title">Welcome to HORIZONH</h3>
+                    <p class="auth-modal__subtitle">
+                        Sign in or create an account for personalized
+                        experiences
+                    </p>
+
+                    <div class="auth-tabs">
+                        <div class="auth-tab active" data-tab="login">
+                            Sign In
+                        </div>
+                        <div class="auth-tab" data-tab="signup">
+                            Create Account
+                        </div>
+                    </div>
+                </div>
+
+                <div class="auth-modal__body">
+                    <!-- Login Form -->
+                    <div class="auth-view active" id="loginView">
+                        <form
+                            class="auth-form"
+                            id="loginForm"
+                            method="post"
+                            action="{% url 'login' %}"
+                        >
+                            {% csrf_token %}
+
+                            <div class="auth-form__group">
+                                <label
+                                    class="auth-form__label"
+                                    for="login-email"
+                                    >Email Address</label
+                                >
+                                <input
+                                    class="auth-form__input"
+                                    type="email"
+                                    id="login-email"
+                                    name="email"
+                                    required
+                                />
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label
+                                    class="auth-form__label"
+                                    for="login-password"
+                                    >Password</label
+                                >
+                                <input
+                                    class="auth-form__input"
+                                    type="password"
+                                    id="login-password"
+                                    name="password"
+                                    required
+                                />
+                            </div>
+
+                            <div class="remember-forgot">
+                                <label class="auth-form__checkbox">
+                                    <input
+                                        type="checkbox"
+                                        name="remember"
+                                        id="remember"
+                                    />
+                                    Remember me
+                                </label>
+                                <a href="#" class="auth-form__forgot"
+                                    >Forgot Password?</a
+                                >
+                            </div>
+
+                            <button type="submit" class="auth-form__submit">
+                                Sign In
+                            </button>
+
+                            <div class="auth-form__divider">
+                                <span>or</span>
+                            </div>
+
+                            <div class="social-login">
+                                <button type="button" class="social-login__btn">
+                                    <i
+                                        class="bx bxl-google social-login__icon"
+                                    ></i>
+                                    Google
+                                </button>
+                                <button type="button" class="social-login__btn">
+                                    <i
+                                        class="bx bxl-facebook social-login__icon"
+                                    ></i>
+                                    Facebook
+                                </button>
+                            </div>
+
+                            <div class="auth-form__footer">
+                                <p>
+                                    Don't have an account?
+                                    <a
+                                        href="#"
+                                        class="auth-form__link"
+                                        data-switch="signup"
+                                        >Create Account</a
+                                    >
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div class="auth-view" id="signupView">
+                        <form
+                            class="auth-form"
+                            id="signupForm"
+                            method="post"
+                            action="{% url 'signup' %}"
+                        >
+                            {% csrf_token %}
+
+                            <div class="auth-form__group">
+                                <label
+                                    class="auth-form__label"
+                                    for="signup-name"
+                                    >Full Name</label
+                                >
+                                <input
+                                    class="auth-form__input"
+                                    type="text"
+                                    id="signup-name"
+                                    name="name"
+                                    required
+                                />
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label
+                                    class="auth-form__label"
+                                    for="signup-email"
+                                    >Email Address</label
+                                >
+                                <input
+                                    class="auth-form__input"
+                                    type="email"
+                                    id="signup-email"
+                                    name="email"
+                                    required
+                                />
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label
+                                    class="auth-form__label"
+                                    for="signup-password"
+                                    >Password</label
+                                >
+                                <input
+                                    class="auth-form__input"
+                                    type="password"
+                                    id="signup-password"
+                                    name="password"
+                                    required
+                                />
+                            </div>
+
+                            <div class="auth-form__group">
+                                <label
+                                    class="auth-form__label"
+                                    for="signup-confirm"
+                                    >Confirm Password</label
+                                >
+                                <input
+                                    class="auth-form__input"
+                                    type="password"
+                                    id="signup-confirm"
+                                    name="password_confirmation"
+                                    required
+                                />
+                            </div>
+
+                            <button type="submit" class="auth-form__submit">
+                                Create Account
+                            </button>
+
+                            <div class="auth-form__divider">
+                                <span>or</span>
+                            </div>
+
+                            <div class="social-login">
+                                <button type="button" class="social-login__btn">
+                                    <i
+                                        class="bx bxl-google social-login__icon"
+                                    ></i>
+                                    Google
+                                </button>
+                                <button type="button" class="social-login__btn">
+                                    <i
+                                        class="bx bxl-facebook social-login__icon"
+                                    ></i>
+                                    Facebook
+                                </button>
+                            </div>
+
+                            <div class="auth-form__footer">
+                                <p>
+                                    Already have an account?
+                                    <a
+                                        href="#"
+                                        class="auth-form__link"
+                                        data-switch="login"
+                                        >Sign In</a
+                                    >
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer__container">
+                    <div class="footer__column">
+                        <div class="footer__logo">HORIZONH</div>
+                        <p class="thin-text">
+                            Experience luxury hospitality at its finest. An
+                            unforgettable journey awaits at our carefully
+                            curated destinations.
+                        </p>
+
+                        <div class="footer__social">
+                            <a href="#"><i class="bx bxl-instagram"></i></a>
+                            <a href="#"><i class="bx bxl-facebook"></i></a>
+                            <a href="#"><i class="bx bxl-twitter"></i></a>
+                            <a href="#"><i class="bx bxl-pinterest"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="footer__column">
+                        <h3
+                            class="uppercase"
+                            style="
+                                font-size: 0.9rem;
+                                font-family: var(--font-sans);
+                            "
+                        >
+                            Navigation
+                        </h3>
+                        <ul class="footer__links">
+                            <li><a href="#" class="footer__link">Home</a></li>
+                            <li>
+                                <a href="#" class="footer__link"
+                                    >Rooms & Suites</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="footer__link">Amenities</a>
+                            </li>
+                            <li>
+                                <a href="#" class="footer__link">Experiences</a>
+                            </li>
+                            <li>
+                                <a href="#" class="footer__link">Gallery</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="footer__column">
+                        <h3
+                            class="uppercase"
+                            style="
+                                font-size: 0.9rem;
+                                font-family: var(--font-sans);
+                            "
+                        >
+                            Contact
+                        </h3>
+                        <ul class="footer__links">
+                            <li>
+                                <a href="#" class="footer__link"
+                                    >123 Luxury Avenue<br />New York, NY
+                                    10001</a
+                                >
+                            </li>
+                            <li>
+                                <a href="tel:+12125551234" class="footer__link"
+                                    >+1 (212) 555-1234</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="mailto:info@horizonh.com"
+                                    class="footer__link"
+                                    >info@horizonh.com</a
+                                >
+                            </li>
+                        </ul>
+                        <a
+                            href="#"
+                            class="footer__link uppercase"
+                            style="
+                                margin-top: 1rem;
+                                display: inline-block;
+                                border-bottom: 1px solid;
+                            "
+                            >Get Directions</a
+                        >
+                    </div>
+
+                    <div class="footer__column">
+                        <h3
+                            class="uppercase"
+                            style="
+                                font-size: 0.9rem;
+                                font-family: var (--font-sans);
+                            "
+                        >
+                            Newsletter
+                        </h3>
+                        <p class="thin-text">
+                    <div class="footer__column">
+                        <h3
+                            class="uppercase"
+                            style="
+                                font-size: 0.9rem;
+                                font-family: var(--font-sans);
+                            "
+                        >
+                            Navigation
+                        </h3>
+                        <ul class="footer__links">
+                            <li><a href="#" class="footer__link">Home</a></li>
+                            <li>
+                                <a href="#" class="footer__link"
+                                    >Rooms & Suites</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="footer__link">Amenities</a>
+                            </li>
+                            <li>
+                                <a href="#" class="footer__link">Experiences</a>
+                            </li>
+                            <li>
+                                <a href="#" class="footer__link">Gallery</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="footer__column">
+                        <h3
+                            class="uppercase"
+                            style="
+                                font-size: 0.9rem;
+                                font-family: var(--font-sans);
+                            "
+                        >
+                            Contact
+                        </h3>
+                        <ul class="footer__links">
+                            <li>
+                                <a href="#" class="footer__link"
+                                    >123 Luxury Avenue<br />New York, NY
+                                    10001</a
+                                >
+                            </li>
+                            <li>
+                                <a href="tel:+12125551234" class="footer__link"
+                                    >+1 (212) 555-1234</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="mailto:info@horizonh.com"
+                                    class="footer__link"
+                                    >info@horizonh.com</a
+                                >
+                            </li>
+                        </ul>
+                        <a
+                            href="#"
+                            class="footer__link uppercase"
+                            style="
+                                margin-top: 1rem;
+                                display: inline-block;
+                                border-bottom: 1px solid;
+                            "
+                            >Get Directions</a
+                        >
+                    </div>
+
+                    <div class="footer__column">
+                        <h3
+                            class="uppercase"
+                            style="
+                                font-size: 0.9rem;
+                                font-family: var (--font-sans);
+                            "
+                        >
+                            Newsletter
+                        </h3>
+                        <p class="thin-text">
+                            Subscribe to our newsletter for exclusive offers and
+                            insights.
+                        </p>
+                        <div class="newsletter">
+                            <form class="newsletter__form">
+                                <input
+                                    type="email"
+                                    placeholder="Your email"
+                                    class="newsletter__input"
+                                    required
+                                />
+                                <button type="submit" class="newsletter__btn">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer__bottom">
+                    <div class="footer__copyright">
+                        © {% now "Y" %} HORIZONH. All rights reserved.
+                    </div>
+                    <div class="footer__utility">
+                        <a href="#" class="footer__link">Privacy Policy</a>
+                        <a href="#" class="footer__link">Terms of Service</a>
+                        <a href="#" class="footer__link">Careers</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Base Scripts -->
+        <script>
+            // Scrolled Header with smoother transition
+            const header = document.getElementById("header");
+            const animatedLogo = document.getElementById("animatedLogo");
+            const logoPlaceholder = document.getElementById("logo-placeholder");
+            const scrollTrigger = document.getElementById("scrollTrigger");
+            let lastScroll = 0;
+            let ticking = false;
+            let scrollThreshold = 12; // Trigger height within 8-16px range
+
+            // Logo animation configuration
+            const logoConfig = {
+                text: "HORIZONH", // Logo text
+                initialPosition: {
+                    top: "50vh", // Center of viewport initially
+                    left: "50%"  // Center horizontally
+                },
+                letterSpacing: {
+                    initial: 0.2, // Relative to font size
+                    final: 0.05   // Tighter spacing when scrolled
+                },
+                staggerDelay: 25, // ms between each letter animation
+                letterBox: {
+                    width: 80,  // Approximate width of each letter container
+                    height: 140 // Approximate height of each letter container
+                }
+            };
+
+            // Create animated logo letters
+            function createAnimatedLogo() {
+                // Clear any existing content
+                animatedLogo.innerHTML = '';
+
+                // Create a container for each letter
+                for (let i = 0; i < logoConfig.text.length; i++) {
+                    const letter = logoConfig.text[i];
+                    const container = document.createElement('div');
+                    container.className = 'animated-logo__letter-container';
+
+
+
+
+                    // Create the letter element
+                    const letterElement = document.createElement('span');
+                    letterElement.className = 'animated-logo__letter';
+                    letterElement.textContent = letter;
+                    letterElement.style.transitionDelay = `${i * logoConfig.staggerDelay}ms`;
+
+                    // Add subtle initial animation
+                    letterElement.style.opacity = 0;
+                    letterElement.style.transform = 'translateY(20px) scale(0.9)';
+
+                    // Append to container
+                    container.appendChild(letterElement);
+                    animatedLogo.appendChild(container);
+                }
+
+                //before scrolling the letters are hidden if i scroll down the leetrs are visible
+
+
+
+                // Trigger layout recalculation and then add entrance animation
+                setTimeout(() => {
+                    document.querySelectorAll('.animated-logo__letter').forEach(letter => {
+                         //before scrolling the letters are hidden if i scroll down the leetrs are visible
+
+                        letter.style.opacity = 1 ; // Set initial opacity to 0 for the first time
+                        letter.style.transform = 'translateY(20px) scale(0.9)'; // Initial transform
+                    });
+                }, 100);
+            }
+
+            // Calculate positions for each letter based on scroll percentage
+            function updateLogoPositions(scrollPercentage) {
+                const letters = document.querySelectorAll('.animated-logo__letter');
+                const logoRect = logoPlaceholder.getBoundingClientRect();
+                const logoCenter = {
+                    x: logoRect.left + logoRect.width / 2,
+                    y: logoRect.top + logoRect.height / 2
+                };
+
+                // Total width needed for the final position
+                const totalFinalWidth = letters.length * logoConfig.letterBox.width *
+                                      (1 - (logoConfig.letterSpacing.final * (letters.length - 1)));
+
+                letters.forEach((letter, index) => {
+                    // Calculate the base positions (initial and final)
+                    const initialLeft = `calc(50% + ${(index - letters.length/2) * logoConfig.letterBox.width *
+                                       (1 + logoConfig.letterSpacing.initial)}px)`;
+
+                    // Final position is centered in the logo placeholder
+                    const finalLeft = logoCenter.x + (index - letters.length/2 + 0.5) *
+                                   (logoConfig.letterBox.width * 0.3) * (1 + logoConfig.letterSpacing.final);
+                    const finalTop = logoCenter.y;
+
+                    // Apply transforms based on scroll percentage
+                    letter.style.transform = `translate(
+                        calc(${initialLeft} + ${(finalLeft - window.innerWidth/2) * scrollPercentage}px),
+                        calc(${logoConfig.initialPosition.top} + ${(finalTop - window.innerHeight/2) * scrollPercentage}px)
+                        )
+                        scale(${1 - 0.8 * scrollPercentage})`;
+                });
+            }
+
+            // Update header class and animate logo
+            function updateHeaderState() {
+                const currentScroll = window.scrollY;
+                const triggerRect = scrollTrigger.getBoundingClientRect();
+
+                // Calculate how far we've scrolled past the trigger as a percentage (0-1)
+                const scrollPercentage = Math.min(1, Math.max(0, -triggerRect.top / scrollThreshold));
+
+                // Apply or remove scrolled class based on percentage
+                if (scrollPercentage > 0) {
+                    if (!header.classList.contains("scrolled") && scrollPercentage >= 1) {
+                        header.classList.add("scrolled");
+                    } else if (header.classList.contains("scrolled") && scrollPercentage < 1) {
+                        header.classList.remove("scrolled");
+                    }
+                } else if (header.classList.contains("scrolled")) {
+                    header.classList.remove("scrolled");
+                }
+
+                // Update logo positions based on scroll percentage
+                updateLogoPositions(scrollPercentage);
+
+                lastScroll = currentScroll;
+                ticking = false;
+            }
+
+            // Run on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                createAnimatedLogo();
+                updateHeaderState();
+            });
+
+            // Use requestAnimationFrame for smoother scrolling
+            window.addEventListener(
+                "scroll",
+                () => {
+                    if (!ticking) {
+                        window.requestAnimationFrame(() => {
+                            updateHeaderState();
+
+                            // Add parallax effect to elements with data-parallax attribute
+                            document.querySelectorAll('[data-parallax]').forEach(el => {
+                                const speed = parseFloat(el.dataset.parallax);
+                                const yPos = -(window.scrollY * speed);
+                                el.style.transform = `translate3d(0, ${yPos}px, 0)`;
+                            });
+
+                            // Animate elements when they come into view
+                            document.querySelectorAll('.animate-on-scroll:not(.animated)').forEach(el => {
+                                const rect = el.getBoundingClientRect();
+                                const windowHeight = window.innerHeight;
+
+                                if (rect.top <= windowHeight * 0.85) {
+                                    el.classList.add('animated');
+
+                                    // Add staggered animation to child elements if needed
+                                    if (el.dataset.stagger) {
+                                        const children = el.querySelectorAll(el.dataset.stagger);
+                                        children.forEach((child, index) => {
+                                            child.style.transitionDelay = `${index * 0.1}s`;
+                                            child.classList.add('animated');
+                                        });
+                                    }
+                                }
+                            });
+
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                },
+                { passive: true }
+            );
+
+            // Handle window resize events for responsive adjustments
+            window.addEventListener('resize', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateHeaderState();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            // Mobile Navigation
+            const mobileNavToggle = document.querySelector(".mobile-nav-toggle");
+            // Select ALL nav elements that need toggling (if structure changes)
+            const navElementsToToggle = document.querySelectorAll(".nav--left, .nav--right"); // Adjust selector if needed
+
+            mobileNavToggle.addEventListener("click", () => {
+                // Toggle a class on the body or header to control nav visibility
+                document.body.classList.toggle("mobile-nav-active");
+
+                const icon = mobileNavToggle.querySelector("i");
+                icon.classList.toggle("bx-menu");
+                icon.classList.toggle("bx-x");
+
+                mobileNavToggle.style.transform = document.body.classList.contains("mobile-nav-active")
+                    ? "rotate(90deg)"
+                    : "rotate(0deg)";
+            });
+
+            // Custom Cursor
+            const cursorDot = document.querySelector(".cursor-dot");
+            const cursorOutline = document.querySelector(".cursor-outline");
+
+            window.addEventListener("mousemove", (e) => {
+                const posX = e.clientX;
+                const posY = e.clientY;
+
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+
+                cursorOutline.style.left = `${posX}px`;
+                cursorOutline.style.top = `${posY}px`;
+            });
+
+            // Custom cursor interactions
+            const links = document.querySelectorAll(
+                "a, button, .btn, .lang-selector__current"
+            );
+            links.forEach((link) => {
+                link.addEventListener("mouseenter", () => {
+                    cursorOutline.style.width = "60px";
+                    cursorOutline.style.height = "60px";
+                    cursorDot.style.transform =
+                        "translate(-50%, -50%) scale(1.5)";
+                });
+
+                link.addEventListener("mouseleave", () => {
+                    cursorOutline.style.width = "40px";
+                    cursorOutline.style.height = "40px";
+                    cursorDot.style.transform =
+                        "translate(-50%, -50%) scale(1)";
+                });
+            });
+
+            // Detect touch devices and disable custom cursor
+            window.addEventListener("touchstart", function () {
+                document.querySelector(".cursor-dot").style.display = "none";
+                document.querySelector(".cursor-outline").style.display =
+                    "none";
+            });
+
+            // Auth Modal Functionality
+            document.addEventListener("DOMContentLoaded", function () {
+                const authOverlay = document.getElementById("authModalOverlay");
+                const authModal = document.querySelector(".auth-modal");
+                const authClose = document.getElementById("authModalClose");
+                const tabs = document.querySelectorAll(".auth-tab");
+                const views = document.querySelectorAll(".auth-view");
+                const switchLinks = document.querySelectorAll("[data-switch]");
+
+                // Get login/signup buttons (add these in the header)
+                const loginBtn = document.querySelector(".login-btn"); // Get login button
+                const signupBtn = document.querySelector(".signup-btn");
+
+                // Open modal
+                function openAuthModal(tab = "login") {
+                    // Set the active tab
+                    activateTab(tab);
+
+                    // Show the modal
+                    authOverlay.classList.add("active");
+                    document.body.style.overflow = "hidden";
+                }
+
+                // Close modal
+                function closeAuthModal() {
+                    authOverlay.classList.remove("active");
+                    document.body.style.overflow = "";
+                }
+
+                // Set active tab and view
+                function activateTab(tab) {
+                    // Deactivate all tabs and views
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    views.forEach((v) => v.classList.remove("active"));
+
+                    // Activate selected tab and view
+                    document
+                        .querySelector(`.auth-tab[data-tab="${tab}"]`)
+                        .classList.add("active");
+                    document
+                        .getElementById(`${tab}View`)
+                        .classList.add("active");
+                }
+
+                // Event listeners for tabs
+                tabs.forEach((tab) => {
+                    tab.addEventListener("click", () => {
+                        activateTab(tab.getAttribute("data-tab"));
+                    });
+                });
+
+                // Event listeners for switch links
+                switchLinks.forEach((link) => {
+                    link.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        activateTab(link.getAttribute("data-switch"));
+                    });
+                });
+
+                // Close modal on overlay click or close button click
+                authOverlay.addEventListener("click", (e) => {
+                    if (e.target === authOverlay) {
+                        closeAuthModal();
+                    }
+                });
+
+                authClose.addEventListener("click", closeAuthModal);
+
+                // Open modal with login/signup buttons
+                if (loginBtn) {
+                    loginBtn.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        openAuthModal("login");
+                    });
+                }
+                if (signupBtn) {
+                    signupBtn.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        openAuthModal("signup");
+                    });
+                }
+
+                // Expose functions for global use
+                window.openAuthModal = openAuthModal;
+                window.closeAuthModal = closeAuthModal;
+            });
+        </script>
+
+        <!-- Additional Scripts -->
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>

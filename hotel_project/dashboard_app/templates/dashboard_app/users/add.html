@@ -1,98 +1,651 @@
-{% extends "dashboard_app/base.html" %} {% load static %} {% block title %}Add
-User - HORIZONH{% endblock %} {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800">Add New User</h2>
-        <a
-            href="{% url 'users' %}"
-            class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-        >
-            <i class="bi bi-arrow-left mr-2"></i> Back to Users
+{% extends "dashboard_app/base.html" %}
+{% load static %}
+
+{% block title %}Add New User - HORIZONH{% endblock %}
+
+{% block header_title %}User Management{% endblock %}
+
+{% block page_title %}Add New User{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'user_list' %}">Users</a></li>
+<li class="breadcrumb-item active" aria-current="page">Add New User</li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Premium form styling to match the user list design */
+  .card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background-color: #dfbb99;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .card-title {
+    font-weight: 600;
+    color: #2c3e50;
+    letter-spacing: -0.01em;
+  }
+
+  .form-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .form-section:last-of-type {
+    border-bottom: none;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+    border-color: #e2e8f0;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: rgba(var(--primary-rgb), 0.5);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .form-text {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+  }
+
+  .form-check-input {
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 1.5px solid #cbd5e1;
+  }
+
+  .form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .form-check-input:focus {
+    border-color: rgba(var(--primary-rgb), 0.5);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .form-check-label {
+    padding-left: 0.25rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-luxe {
+    border-radius: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 5px rgba(var(--primary-rgb), 0.15);
+    transition: all 0.2s ease;
+  }
+
+  .btn-luxe:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.2);
+  }
+
+  .btn-light-luxe {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+  }
+
+  .btn-light-luxe:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  .invalid-feedback {
+    font-size: 0.8rem;
+    color: #dc3545;
+    margin-top: 0.35rem;
+  }
+
+  /* Password strength meter */
+  .password-strength {
+    height: 5px;
+    margin-top: 0.5rem;
+    border-radius: 2.5px;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .password-strength span {
+    height: 100%;
+    flex: 1;
+    margin-right: 2px;
+    border-radius: 2.5px;
+    background-color: #e2e8f0;
+    transition: background-color 0.3s ease;
+  }
+
+  .password-strength span:last-child {
+    margin-right: 0;
+  }
+
+  .password-strength.weak span:nth-child(1) {
+    background-color: #ef4444;
+  }
+
+  .password-strength.medium span:nth-child(1),
+  .password-strength.medium span:nth-child(2) {
+    background-color: #f59e0b;
+  }
+
+  .password-strength.strong span:nth-child(1),
+  .password-strength.strong span:nth-child(2),
+  .password-strength.strong span:nth-child(3) {
+    background-color: #10b981;
+  }
+
+  .password-strength.very-strong span {
+    background-color: #10b981;
+  }
+
+  .strength-text {
+    font-size: 0.75rem;
+    margin-top: 0.35rem;
+    color: #64748b;
+  }
+
+  /* Profile picture preview */
+  .profile-picture-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .profile-picture-preview i {
+    font-size: 2rem;
+    color: #cbd5e1;
+    transition: all 0.2s ease;
+  }
+
+  .profile-picture-preview:hover {
+    border-color: rgba(var(--primary-rgb), 0.5);
+    cursor: pointer;
+  }
+
+  .profile-picture-preview:hover i {
+    color: rgba(var(--primary-rgb), 0.7);
+  }
+
+  .profile-picture-preview img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #remove-picture {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    z-index: 2;
+  }
+
+  .profile-picture-preview:hover #remove-picture {
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <div>
+            <h5 class="card-title mb-0">Create New User</h5>
+            <p class="text-muted mb-0 small">Add a new user or staff member to the system</p>
+        </div>
+        <a href="{% url 'user_list' %}" class="btn btn-light-luxe btn-sm">
+            <i class="bx bx-arrow-back me-1"></i> Back to Users
         </a>
     </div>
 
-    <div
-        class="bg-white rounded-xl shadow-md overflow-hidden max-w-2xl mx-auto"
-    >
-        <div class="p-8">
-            <form method="POST" class="space-y-6">
-                {% csrf_token %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
 
-                <!-- Email Field -->
-                <div class="mb-4">
-                    <label
-                        for="{{ form.email.id_for_label }}"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        name="{{ form.email.name }}"
-                        id="{{ form.email.id_for_label }}"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="user@example.com"
-                        required
-                    />
-                    {% if form.email.errors %}
-                    <p class="mt-1 text-sm text-red-600">
-                        {{ form.email.errors|join:", " }}
-                    </p>
-                    {% endif %}
-                </div>
+        <!-- Personal Information Section -->
+        <div class="form-section">
+            <h6 class="section-title">Personal Information</h6>
 
-                <!-- Password Field -->
-                <div class="mb-4">
-                    <label
-                        for="{{ form.password.id_for_label }}"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        name="{{ form.password.name }}"
-                        id="{{ form.password.id_for_label }}"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="••••••••"
-                        required
-                    />
-                    {% if form.password.errors %}
-                    <p class="mt-1 text-sm text-red-600">
-                        {{ form.password.errors|join:", " }}
-                    </p>
-                    {% endif %}
-                </div>
-
-                <!-- Staff Status Field -->
-                <div class="mb-6">
-                    <div class="flex items-center">
-                        <input
-                            type="checkbox"
-                            name="{{ form.is_staff.name }}"
-                            id="{{ form.is_staff.id_for_label }}"
-                            class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                        />
-                        <label
-                            for="{{ form.is_staff.id_for_label }}"
-                            class="ml-2 block text-sm text-gray-700"
-                        >
-                            Staff Member (Can access admin dashboard)
+            <div class="row mb-4">
+                <div class="col-lg-2 col-md-3">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="profile-picture-preview" id="profile-preview">
+                            <i class="bx bx-user"></i>
+                            <div id="remove-picture" style="display: none;">
+                                <i class="bx bx-x"></i>
+                            </div>
+                        </div>
+                        <label for="profile_picture" class="btn btn-sm btn-light-luxe">
+                            <i class="bx bx-upload me-1"></i> Upload Photo
                         </label>
+                        <input type="file" id="profile_picture" name="profile_picture" class="d-none" accept="image/*">
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-gray-200">
-                    <button
-                        type="submit"
-                        class="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
-                    >
-                        <i class="bi bi-person-plus-fill mr-2"></i> Create User
-                        Account
-                    </button>
+                <div class="col-lg-10 col-md-9">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="form-text">This will be used as their login username</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <!-- Account Settings Section -->
+        <div class="form-section">
+            <h6 class="section-title">Account Settings</h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="toggle-password">
+                            <i class="bx bx-hide"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="strength-text"></div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="password_confirm" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                    <div class="invalid-feedback">Passwords do not match</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="role" class="form-label">User Role</label>
+                    <select class="form-select" id="role" name="role">
+                        <option value="user">Regular User</option>
+                        <option value="staff">Staff Member</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <select class="form-select" id="department" name="department">
+                        <option value="">-- Select Department --</option>
+                        <option value="front_desk">Front Desk</option>
+                        <option value="housekeeping">Housekeeping</option>
+                        <option value="food_beverage">Food & Beverage</option>
+                        <option value="management">Management</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="accounting">Accounting</option>
+                        <option value="hr">Human Resources</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                        <label class="form-check-label" for="is_active">
+                            Active Account
+                        </label>
+                        <div class="form-text">User can log in and access the system</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="send_welcome_email" name="send_welcome_email" checked>
+                        <label class="form-check-label" for="send_welcome_email">
+                            Send Welcome Email
+                        </label>
+                        <div class="form-text">User will receive login instructions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permissions Section -->
+        <div class="form-section">
+            <h6 class="section-title">Access Permissions</h6>
+
+            <div class="row mb-3">
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_dashboard" name="permissions" value="dashboard">
+                        <label class="form-check-label" for="perm_dashboard">
+                            Dashboard Access
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_reservations" name="permissions" value="reservations">
+                        <label class="form-check-label" for="perm_reservations">
+                            Manage Reservations
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_guests" name="permissions" value="guests">
+                        <label class="form-check-label" for="perm_guests">
+                            Guest Management
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_rooms" name="permissions" value="rooms">
+                        <label class="form-check-label" for="perm_rooms">
+                            Room Management
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_billing" name="permissions" value="billing">
+                        <label class="form-check-label" for="perm_billing">
+                            Billing & Invoices
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_reports" name="permissions" value="reports">
+                        <label class="form-check-label" for="perm_reports">
+                            Reports & Analytics
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_settings" name="permissions" value="settings">
+                        <label class="form-check-label" for="perm_settings">
+                            System Settings
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="perm_users" name="permissions" value="users">
+                        <label class="form-check-label" for="perm_users">
+                            User Management
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="card-footer bg-white py-3">
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'user_list' %}" class="btn btn-light-luxe">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-luxe">
+                    <i class="bx bx-user-plus me-1"></i> Create User
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile picture preview
+    const profilePicture = document.getElementById('profile_picture');
+    const profilePreview = document.getElementById('profile-preview');
+    const removeButton = document.getElementById('remove-picture');
+
+    profilePicture.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                // Remove icon
+                profilePreview.querySelector('i').style.display = 'none';
+
+                // Create image if it doesn't exist
+                let img = profilePreview.querySelector('img');
+                if (!img) {
+                    img = document.createElement('img');
+                    profilePreview.appendChild(img);
+                }
+
+                // Set image source
+                img.src = e.target.result;
+
+                // Show remove button
+                removeButton.style.display = 'flex';
+            }
+
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    // Remove profile picture
+    removeButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        // Remove image
+        const img = profilePreview.querySelector('img');
+        if (img) {
+            img.remove();
+        }
+
+        // Show icon
+        profilePreview.querySelector('i').style.display = 'block';
+
+        // Hide remove button
+        this.style.display = 'none';
+
+        // Clear file input
+        profilePicture.value = '';
+    });
+
+    // Toggle password visibility
+    const togglePassword = document.getElementById('toggle-password');
+    const password = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        // Toggle icon
+        const icon = this.querySelector('i');
+        icon.classList.toggle('bx-hide');
+        icon.classList.toggle('bx-show');
+    });
+
+    // Password strength meter
+    const passwordInput = document.getElementById('password');
+    const strengthMeter = document.querySelector('.password-strength');
+    const strengthText = document.querySelector('.strength-text');
+
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+
+        // Check length
+        if (password.length >= 8) {
+            strength += 1;
+        }
+
+        // Check for lowercase and uppercase
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+            strength += 1;
+        }
+
+        // Check for numbers
+        if (password.match(/\d/)) {
+            strength += 1;
+        }
+
+        // Check for special characters
+        if (password.match(/[^a-zA-Z\d]/)) {
+            strength += 1;
+        }
+
+        // Update strength meter
+        strengthMeter.className = 'password-strength';
+
+        if (password.length === 0) {
+            strengthText.textContent = '';
+        } else if (strength === 1) {
+            strengthMeter.classList.add('weak');
+            strengthText.textContent = 'Weak password';
+            strengthText.style.color = '#ef4444';
+        } else if (strength === 2) {
+            strengthMeter.classList.add('medium');
+            strengthText.textContent = 'Medium password';
+            strengthText.style.color = '#f59e0b';
+        } else if (strength === 3) {
+            strengthMeter.classList.add('strong');
+            strengthText.textContent = 'Strong password';
+            strengthText.style.color = '#10b981';
+        } else if (strength === 4) {
+            strengthMeter.classList.add('very-strong');
+            strengthText.textContent = 'Very strong password';
+            strengthText.style.color = '#10b981';
+        }
+    });
+
+    // Password confirmation validation
+    const passwordConfirm = document.getElementById('password_confirm');
+
+    passwordConfirm.addEventListener('input', function() {
+        if (this.value !== passwordInput.value) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Role-based permission toggling
+    const roleSelect = document.getElementById('role');
+    const permCheckboxes = document.querySelectorAll('input[name="permissions"]');
+
+    roleSelect.addEventListener('change', function() {
+        const role = this.value;
+
+        if (role === 'admin') {
+            // Check all permissions for admin
+            permCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        } else if (role === 'staff') {
+            // Check basic permissions for staff
+            permCheckboxes.forEach(checkbox => {
+                const value = checkbox.value;
+                checkbox.checked = ['dashboard', 'reservations', 'guests', 'rooms'].includes(value);
+            });
+        } else {
+            // Uncheck all for regular user
+            permCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+    });
+
+    // Form validation before submit
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function(e) {
+        let valid = true;
+
+        // Check if passwords match
+        if (passwordInput.value !== passwordConfirm.value) {
+            passwordConfirm.classList.add('is-invalid');
+            valid = false;
+        }
+
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
 {% endblock %}

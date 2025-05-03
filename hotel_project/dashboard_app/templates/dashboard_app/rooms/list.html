@@ -1,369 +1,770 @@
-{% extends "dashboard_app/base.html" %} {% load static %} {% block title %}Room
-Management - HORIZONH{% endblock %} {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800">Room Management</h2>
-        <a
-            href="{% url 'room_add' %}"
-            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-        >
-            <i class="bi bi-plus-lg mr-2"></i> Add Room
+{% extends 'dashboard_app/base.html' %}
+{% load static %}
+
+{% block title %}Room List - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #4a6baf;
+        --secondary: #718096;
+        --accent: #c4a17d;
+        --accent-light: #d5b69d;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --light: #f8f9fa;
+        --dark: #344767;
+        --gray-100: #f8f9fa;
+        --gray-200: #e9ecef;
+        --gray-300: #dee2e6;
+        --gray-400: #ced4da;
+        --gray-500: #adb5bd;
+        --gray-600: #6c757d;
+        --gray-700: #495057;
+        --gray-800: #343a40;
+        --gray-900: #212529;
+    }
+
+    /* Dashboard Layout Enhancements */
+    .dashboard-content {
+        background-color: #f5f7fa;
+        min-height: calc(100vh - 60px);
+        padding: 1.5rem 0;
+    }
+
+    /* Card Styles */
+    .premium-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 5px 22px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        background-color: #fff;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .premium-card:hover {
+        box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+        transform: translateY(-3px);
+    }
+
+    .premium-card .card-header {
+        background: linear-gradient(135deg, #4a6baf 0%, #5d7bbf 100%);
+        color: white;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .premium-card .card-header.luxury {
+        background: linear-gradient(135deg, #c4a17d 0%, #d5b69d 100%);
+    }
+
+    .premium-card .card-body {
+        padding: 0;
+    }
+
+    /* Table Styles */
+    .premium-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 0;
+    }
+
+    .premium-table thead th {
+        background: var(--gray-100);
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        text-align: left;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+        border-bottom: 2px solid var(--gray-200);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .premium-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .premium-table tbody tr:nth-child(even) {
+        background-color: rgba(245, 247, 250, 0.5);
+    }
+
+    .premium-table tbody tr:hover {
+        background-color: rgba(74, 107, 175, 0.05);
+    }
+
+    .premium-table td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        font-size: 0.95rem;
+        color: var(--gray-700);
+        border: none;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .premium-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Image Styles */
+    .room-image {
+        width: 120px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .room-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+
+    .image-placeholder {
+        width: 120px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--gray-100);
+        border-radius: 10px;
+        color: var(--gray-500);
+        transition: all 0.3s ease;
+    }
+
+    /* Stats Cards */
+    .stats-container {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        flex: 1;
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border-left: 5px solid var(--primary);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .stat-card:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, rgba(74, 107, 175, 0.1) 0%, rgba(74, 107, 175, 0) 100%);
+        border-radius: 0 0 0 70px;
+    }
+
+    .stat-card.accent {
+        border-left-color: var(--accent);
+    }
+
+    .stat-card.accent:before {
+        background: linear-gradient(135deg, rgba(196, 161, 125, 0.1) 0%, rgba(196, 161, 125, 0) 100%);
+    }
+
+    .stat-icon {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 2rem;
+        color: rgba(74, 107, 175, 0.2);
+    }
+
+    .stat-card.accent .stat-icon {
+        color: rgba(196, 161, 125, 0.2);
+    }
+
+    .stat-value {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: var(--secondary);
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .stat-change {
+        display: flex;
+        align-items: center;
+        margin-top: 0.75rem;
+        font-size: 0.85rem;
+        color: var(--success);
+    }
+
+    .stat-change.negative {
+        color: var(--danger);
+    }
+
+    /* Button Styles */
+    .btn-premium {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.25s ease;
+        padding: 0.6rem 1.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border: none;
+    }
+
+    .btn-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+
+    .btn-premium.btn-primary {
+        background: linear-gradient(135deg, #4a6baf 0%, #5d7bbf 100%);
+        color: white;
+    }
+
+    .btn-premium.btn-light {
+        background: white;
+        color: var(--primary);
+    }
+
+    .btn-premium.btn-accent {
+        background: linear-gradient(135deg, #c4a17d 0%, #d5b69d 100%);
+        color: white;
+    }
+
+    /* Badge Styles */
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 0.5em 1em;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .status-badge.available {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+    }
+
+    .status-badge.occupied {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .status-dot.available {
+        background-color: #10b981;
+    }
+
+    .status-dot.occupied {
+        background-color: #ef4444;
+    }
+
+    /* Action Button Styles */
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        background: transparent;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .action-btn.btn-outline-primary {
+        color: var(--primary);
+        border: 1.5px solid var(--primary);
+    }
+
+    .action-btn.btn-outline-primary:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .action-btn.btn-outline-danger {
+        color: var(--danger);
+        border: 1.5px solid var(--danger);
+    }
+
+    .action-btn.btn-outline-danger:hover {
+        background-color: var(--danger);
+        color: white;
+    }
+
+    /* Capacity Display */
+    .capacity-display {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--gray-100);
+        padding: 0.4rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    /* Price Display */
+    .price-display {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 1.1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .empty-state-icon {
+        font-size: 3.5rem;
+        color: var(--gray-400);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state-text {
+        color: var(--gray-600);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        padding: 1.5rem;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .pagination {
+        margin: 0;
+    }
+
+    .pagination .page-link {
+        border-radius: 8px;
+        margin: 0 3px;
+        color: var(--primary);
+        border: 1px solid var(--gray-200);
+        font-weight: 500;
+        padding: 0.5rem 0.75rem;
+        min-width: 38px;
+        text-align: center;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        box-shadow: 0 3px 10px rgba(74, 107, 175, 0.3);
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: var(--gray-400);
+    }
+
+    .page-info {
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: var(--gray-600);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 991px) {
+        .stats-container {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-card {
+            padding: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .premium-table thead th,
+        .premium-table td {
+            padding: 0.75rem 1rem;
+        }
+
+        .room-image,
+        .image-placeholder {
+            width: 100px;
+            height: 70px;
+        }
+    }
+
+    /* Additional Enhancements */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .search-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border-radius: 10px;
+        border: 1px solid var(--gray-300);
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(74, 107, 175, 0.2);
+        outline: none;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-500);
+    }
+
+    /* Table Extras */
+    .room-type-badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.85em;
+        font-weight: 500;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 6px;
+        background-color: #e9ecef;
+        color: #495057;
+    }
+
+    .room-type-badge.standard {
+        background-color: #e5e7eb;
+        color: #4b5563;
+    }
+
+    .room-type-badge.deluxe {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .room-type-badge.suite {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .room-type-badge.executive {
+        background-color: #fce7f3;
+        color: #9d174d;
+    }
+
+    .room-type-badge.presidential {
+        background-color: #f9c5d1;
+        color: #881337;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="page-header">
+        <h1 class="page-title">Room Management</h1>
+        <a href="{% url 'room_add' %}" class="btn btn-premium btn-accent">
+            <i class="fas fa-plus"></i>
+            <span>Add New Room</span>
         </a>
     </div>
 
-    <!-- Room Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div
-            class="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500"
-        >
-            <div class="flex items-center">
-                <div class="flex-1">
-                    <p class="text-xs font-medium text-blue-600 uppercase">
-                        Total Rooms
-                    </p>
-                    <h3 class="text-xl font-bold">{{ rooms.count }}</h3>
-                </div>
-                <div class="text-gray-400">
-                    <i class="bi bi-building text-2xl"></i>
-                </div>
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-hotel"></i>
+            </div>
+            <div class="stat-label">Total Rooms</div>
+            <div class="stat-value">{{ room_count }}</div>
+            <div class="stat-change">
+                <i class="fas fa-arrow-up me-1"></i> 5% from last month
             </div>
         </div>
-
-        <div
-            class="bg-white rounded-xl shadow-md p-4 border-l-4 border-green-500"
-        >
-            <div class="flex items-center">
-                <div class="flex-1">
-                    <p class="text-xs font-medium text-green-600 uppercase">
-                        Available
-                    </p>
-                    <h3 class="text-xl font-bold">{{ available_count }}</h3>
-                </div>
-                <div class="text-gray-400">
-                    <i class="bi bi-check-circle text-2xl"></i>
-                </div>
+        <div class="stat-card accent">
+            <div class="stat-icon">
+                <i class="fas fa-door-open"></i>
+            </div>
+            <div class="stat-label">Available Rooms</div>
+            <div class="stat-value">{{ available_count }}</div>
+            <div class="stat-change negative">
+                <i class="fas fa-arrow-down me-1"></i> 3% from last month
+            </div>
+        </div>
+        <div class="stat-card" style="border-left-color: #10b981;">
+            <div class="stat-icon" style="color: rgba(16, 185, 129, 0.2);">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-label">Occupancy Rate</div>
+            <div class="stat-value">{{ occupancy_rate|default:"78%" }}</div>
+            <div class="stat-change">
+                <i class="fas fa-arrow-up me-1"></i> 2% from last month
             </div>
         </div>
     </div>
 
-    <!-- Search and Filter -->
-    <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="relative">
-                <div
-                    class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                >
-                    <i class="bi bi-search text-gray-400"></i>
-                </div>
-                <input
-                    type="text"
-                    id="roomSearch"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
-                    placeholder="Search rooms..."
-                />
+
+    <div class="premium-card">
+        <div class="card-header luxury d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-hotel me-2"></i>
+                <span class="fw-bold">Room Inventory</span>
             </div>
 
-            <select
-                id="roomTypeFilter"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            >
-                <option value="">All Room Types</option>
-                <option value="Single">Single</option>
-                <option value="Double">Double</option>
-                <option value="Suite">Suite</option>
-                <option value="Luxury">Luxury</option>
-            </select>
-
-            <select
-                id="statusFilter"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            >
-                <option value="">Any Status</option>
-                <option value="available">Available</option>
-                <option value="occupied">Occupied</option>
-            </select>
         </div>
-    </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table premium-table" id="datatablesSimple" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Room Number</th>
+                            <th>Type</th>
+                            <th>Price/Night</th>
+                            <th>Capacity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room in room_list %}
+                        <tr>
+                            <td>
+                                {% if room.image %}
+                                    <img src="{{ room.image.url }}" alt="{{ room.room_type }}" class="room-image">
+                                {% else %}
+                                    <div class="image-placeholder">
+                                        <i class="fas fa-image text-secondary fa-2x"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold">{{ room.room_number }}</td>
+                            <td>
+                                {% if room.room_type == 'Standard' %}
+                                    <span class="room-type-badge standard">Standard</span>
+                                {% elif room.room_type == 'Deluxe' %}
+                                    <span class="room-type-badge deluxe">Deluxe</span>
+                                {% elif room.room_type == 'Suite' %}
+                                    <span class="room-type-badge suite">Suite</span>
+                                {% elif room.room_type == 'Executive' %}
+                                    <span class="room-type-badge executive">Executive</span>
+                                {% elif room.room_type == 'Presidential' %}
+                                    <span class="room-type-badge presidential">Presidential</span>
+                                {% else %}
+                                    <span class="room-type-badge">{{ room.room_type }}</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="price-display">${{ room.price_per_night }}</span></td>
+                            <td>
+                                <div class="capacity-display">
+                                    <i class="fas fa-user"></i>
+                                    <span>{{ room.capacity }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if room.is_available %}
+                                    <span class="status-badge available">
+                                        <span class="status-dot available"></span>
+                                        Available
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge occupied">
+                                        <span class="status-dot occupied"></span>
+                                        Occupied
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'room_edit' room.pk %}" class="action-btn btn btn-outline-primary" data-bs-toggle="tooltip" title="Edit room">
+                                        <i class="bx bx-edit-alt fs-5"></i>
+                                    </a>
+                                    <a href="{% url 'room_delete' room.pk %}" class="action-btn btn btn-outline-danger" data-bs-toggle="tooltip" title="Delete room">
+                                        <i class="bx bx-trash fs-5"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-hotel empty-state-icon"></i>
+                                    <h3 class="empty-state-title">No Rooms Found</h3>
+                                    <p class="empty-state-text">Your hotel inventory appears to be empty. Start by adding your first room.</p>
+                                    <a href="{% url 'room_list' %}" class="btn btn-premium btn-primary">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Add Your First Room
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <table id="roomsTable" class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Image
-                    </th>
-                    <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Room #
-                    </th>
-                    <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Type
-                    </th>
-                    <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Price
-                    </th>
-                    <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Capacity
-                    </th>
-                    <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Status
-                    </th>
-                    <th
-                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for room in rooms %}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex-shrink-0 h-16 w-24">
-                            {% if room.image %}
-                            <img
-                                class="h-16 w-24 object-cover rounded-md"
-                                src="{% if room.image.url|slice:'0:4' == 'http' %}{{ room.image.url }}{% else %}{% static room.image.url %}{% endif %}"
-                                alt="{{ room.room_type }} room"
-                                onerror="this.onerror=null; this.src='{% static 'dashboard_app/images/room' %}{{ room.room_number|lower|default:'room' }}.jpg'"
-                            />
-                            {% else %}
-                            <div
-                                class="h-16 w-24 bg-gray-100 rounded-md flex items-center justify-center"
-                            >
-                                <i
-                                    class="bi bi-image text-gray-400 text-2xl"
-                                ></i>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td
-                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-                    >
-                        <i class="bi bi-door-closed text-blue-500 mr-1"></i> {{ room.room_number | default:"NAN" }}
-                    </td>
-                    <td
-                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    >
-                        {{ room.room_type|default:"Standard" }}
-                    </td>
-                    <td
-                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600"
-                    >
-                        ${{ room.price_per_night|floatformat:2|default:"0.00" }}
-                    </td>
-                    <td
-                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    >
-                        <i class="bi bi-people text-gray-400 mr-1"></i> {{ room.capacity | default:"2" }} persons
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        {% if room.is_available %}
-                        <span
-                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                        >
-                            <i class="bi bi-check-circle mr-1"></i> Available
-                        </span>
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
                         {% else %}
-                        <span
-                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                        >
-                            <i class="bi bi-x-circle mr-1"></i> Occupied
-                        </span>
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;&laquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
                         {% endif %}
-                    </td>
-                    <td
-                        class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                    >
-                        <a
-                            href="{% url 'room_edit' room.id %}"
-                            class="text-indigo-600 hover:text-indigo-900 mr-3"
-                        >
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a>
-                        <a
-                            href="{% url 'room_delete' room.id %}"
-                            class="text-red-600 hover:text-red-900"
-                        >
-                            <i class="bi bi-trash"></i> Delete
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td
-                        colspan="7"
-                        class="px-6 py-4 text-center text-sm text-gray-500"
-                    >
-                        <p class="my-4">No rooms found.</p>
-                        <a
-                            href="{% url 'room_add' %}"
-                            class="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                        >
-                            <i class="bi bi-plus-lg mr-1"></i> Add your first
-                            room
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 
-    <!-- Pagination -->
-    {% if is_paginated %}
-    <div class="py-4 flex justify-center">
-        <nav
-            class="inline-flex rounded-md shadow-sm -space-x-px"
-            aria-label="Pagination"
-        >
-            {% if page_obj.has_previous %}
-            <a
-                href="?page=1"
-                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-                <span class="sr-only">First</span>
-                <i class="bi bi-chevron-double-left"></i>
-            </a>
-            <a
-                href="?page={{ page_obj.previous_page_number }}"
-                class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-                <span class="sr-only">Previous</span>
-                <i class="bi bi-chevron-left"></i>
-            </a>
-            {% endif %} {% for num in page_obj.paginator.page_range %} {% if
-            page_obj.number == num %}
-            <span
-                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600"
-            >
-                {{ num }}
-            </span>
-            {% elif num > page_obj.number|add:'-3' and num <
-            page_obj.number|add:'3' %}
-            <a
-                href="?page={{ num }}"
-                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-                {{ num }}
-            </a>
-            {% endfor %} {% if page_obj.has_next %}
-            <a
-                href="?page={{ page_obj.next_page_number }}"
-                class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-                <span class="sr-only">Next</span>
-                <i class="bi bi-chevron-right"></i>
-            </a>
-            <a
-                href="?page={{ page_obj.paginator.num_pages }}"
-                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-                <span class="sr-only">Last</span>
-                <i class="bi bi-chevron-double-right"></i>
-            </a>
-            {% endif %}
-        </nav>
-    </div>
-    {% endif %}
+                        {% for num in paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
 
-    <!-- Image Preview Modal -->
-    <div
-        class="modal fade"
-        id="imagePreviewModal"
-        tabindex="-1"
-        aria-labelledby="imagePreviewModalLabel"
-        aria-hidden="true"
-    >
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imagePreviewModalLabel">
-                        Room Image
-                    </h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <img
-                        id="modalImage"
-                        src=""
-                        class="img-fluid w-100"
-                        alt="Room preview"
-                    />
-                </div>
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                    >
-                        Close
-                    </button>
-                </div>
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ paginator.num_pages }}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <p class="text-center text-muted page-info">Page {{ page_obj.number }} of {{ paginator.num_pages }}</p>
             </div>
+            {% endif %}
+            <!-- End Pagination -->
         </div>
     </div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <script>
-    $(document).ready(function () {
-        // Initialize DataTable
-        var roomTable = $("#roomsTable").DataTable({
-            paging: false,
-            info: false,
-            searching: true,
-            ordering: true,
-            responsive: true,
-            autoWidth: false,
-            dom: "t", // Show only the table, no controls
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
 
-        // Custom search box
-        $("#roomSearch").on("keyup", function () {
-            roomTable.search(this.value).draw();
-        });
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
 
-        // Room type filtering
-        $("#roomTypeFilter").on("change", function () {
-            roomTable.column(2).search($(this).val()).draw(); // Changed from 1 to 2 after adding image column
-        });
+                rows.forEach(row => {
+                    const roomNumber = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const roomType = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
 
-        // Status filtering
-        $("#statusFilter").on("change", function () {
-            let val = $(this).val();
-            let searchVal = "";
-
-            if (val === "available") searchVal = "Available";
-            else if (val === "occupied") searchVal = "Occupied";
-
-            roomTable.column(5).search(searchVal).draw(); // Changed from 4 to 5 after adding image column
-        });
-
-        // Image preview functionality
-        $(".room-image").on("click", function () {
-            var imgSrc = $(this).attr("src");
-            var roomName = $(this).attr("alt");
-            $("#modalImage").attr("src", imgSrc);
-            $("#imagePreviewModalLabel").text(roomName);
-            $("#imagePreviewModal").modal("show");
-        });
+                    if (roomNumber.includes(searchTerm) || roomType.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
     });
 </script>
 {% endblock %}

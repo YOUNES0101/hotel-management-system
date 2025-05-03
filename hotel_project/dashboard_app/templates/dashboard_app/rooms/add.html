@@ -1,0 +1,769 @@
+{% extends "dashboard_app/base.html" %}
+{% load static %}
+
+{% block title %}Add New Room - HORIZONH{% endblock %}
+
+{% block header_title %}Room Management{% endblock %}
+
+{% block page_title %}Add New Room{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'room_list' %}">Rooms</a></li>
+<li class="breadcrumb-item active" aria-current="page">Add New Room</li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Premium form styling to match the design system */
+  .card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background-color: #dfbb99;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .card-title {
+    font-weight: 600;
+    color: #2c3e50;
+    letter-spacing: -0.01em;
+  }
+
+  .form-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .form-section:last-of-type {
+    border-bottom: none;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+    border-color: #e2e8f0;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: rgba(var(--primary-rgb), 0.5);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .form-text {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+  }
+
+  .btn-luxe {
+    border-radius: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 5px rgba(var(--primary-rgb), 0.15);
+    transition: all 0.2s ease;
+  }
+
+  .btn-luxe:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.2);
+  }
+
+  .btn-light-luxe {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+  }
+
+  .btn-light-luxe:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  /* Room Image Preview */
+  .room-image-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background-color: #f8fafc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .room-image-preview {
+    width: 100%;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #cbd5e1;
+    border-radius: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    background-color: #f8fafc;
+  }
+
+  .room-image-preview i {
+    font-size: 3rem;
+    color: #cbd5e1;
+    transition: all 0.2s ease;
+  }
+
+  .room-image-preview:hover {
+    border-color: rgba(var(--primary-rgb), 0.5);
+    cursor: pointer;
+  }
+
+  .room-image-preview:hover i {
+    color: rgba(var(--primary-rgb), 0.7);
+  }
+
+  .room-image-preview img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #remove-image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(239, 68, 68, 0.9);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .room-image-container:hover #remove-image {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .image-upload-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+  }
+
+  /* Property amenities */
+  .amenities-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .amenity-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+  }
+
+  .amenity-item:hover {
+    background-color: rgba(var(--primary-rgb), 0.05);
+    border-color: rgba(var(--primary-rgb), 0.2);
+  }
+
+  .amenity-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    font-size: 1.2rem;
+    color: var(--primary);
+  }
+
+  .form-check-input {
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 1.5px solid #cbd5e1;
+  }
+
+  .form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .form-check-input:focus {
+    border-color: rgba(var(--primary-rgb), 0.5);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .form-check-label {
+    padding-left: 0.25rem;
+    font-size: 0.95rem;
+  }
+
+  /* Currency input */
+  .input-group-text {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+  }
+
+  /* Accessibility focus styles */
+  .form-control:focus,
+  .form-select:focus,
+  .btn:focus,
+  .form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.25);
+    outline: none;
+  }
+
+  /* Editor styling for description */
+  .description-editor {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .description-toolbar {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .toolbar-btn {
+    background-color: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .toolbar-btn:hover {
+    background-color: #f1f5f9;
+    color: #475569;
+  }
+
+  #description {
+    padding: 1rem;
+    min-height: 150px;
+    border: none;
+    width: 100%;
+    resize: vertical;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <div>
+            <h5 class="card-title mb-0">Add New Room</h5>
+            <p class="text-muted mb-0 small">Create a new room in your property inventory</p>
+        </div>
+        <a href="{% url 'room_list' %}" class="btn btn-light-luxe btn-sm">
+            <i class="bx bx-arrow-back me-1"></i> Back to Rooms
+        </a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Basic Information Section -->
+        <div class="form-section">
+            <h6 class="section-title">Room Information</h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="room_number" class="form-label">Room Number*</label>
+                    <input type="text" class="form-control" id="room_number" name="room_number" required>
+                    <div class="form-text">Unique identifier for this room</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="room_type" class="form-label">Room Type*</label>
+                    <select class="form-select" id="room_type" name="room_type" required>
+                        <option value="">-- Select Room Type --</option>
+                        <option value="Standard">Standard</option>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Suite">Suite</option>
+                        <option value="Executive Suite">Executive Suite</option>
+                        <option value="Presidential Suite">Presidential Suite</option>
+                        <option value="Family Room">Family Room</option>
+                        <option value="Connecting Room">Connecting Room</option>
+                        <option value="Accessible Room">Accessible Room</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="price_per_night" class="form-label">Price Per Night*</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control" id="price_per_night" name="price_per_night" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="capacity" class="form-label">Capacity*</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="capacity" name="capacity" min="1" max="20" required>
+                        <span class="input-group-text">Guests</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="is_available" class="form-label">Availability</label>
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" role="switch" id="is_available" name="is_available" checked>
+                        <label class="form-check-label" for="is_available">Available for booking</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Image Section -->
+        <div class="form-section">
+            <h6 class="section-title">Room Image</h6>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="room-image-container">
+                        <div class="room-image-preview" id="room-image-preview">
+                            <i class="bx bx-image-add"></i>
+                            <div id="remove-image" style="display: none;">
+                                <i class="bx bx-x"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="image-upload-controls">
+                        <label for="room_image" class="btn btn-light-luxe">
+                            <i class="bx bx-upload me-1"></i> Upload Image
+                        </label>
+                        <input type="file" id="room_image" name="image" class="d-none" accept="image/jpeg,image/png,image/webp">
+                        <div class="flex-grow-1">
+                            <span class="d-block form-text mb-0">Supported formats: JPG, JPEG, PNG, WEBP</span>
+                            <span class="d-block form-text">Recommended size: 1200 x 800 pixels</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card h-100 bg-light-subtle border-0">
+                        <div class="card-body">
+                            <h6 class="fw-semibold mb-3"><i class="bx bx-info-circle me-2"></i>Image Guidelines</h6>
+                            <ul class="text-muted small ps-3">
+                                <li class="mb-2">Upload high-quality images that showcase the room's features</li>
+                                <li class="mb-2">Ensure good lighting to highlight room details</li>
+                                <li class="mb-2">Make sure the room is clean and properly staged</li>
+                                <li class="mb-2">Include key selling points like views or special amenities</li>
+                                <li>Maintain consistent image style across all rooms</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Description Section -->
+        <div class="form-section">
+            <h6 class="section-title">Room Description</h6>
+
+            <div class="description-editor mb-3">
+                <div class="description-toolbar">
+                    <button type="button" class="toolbar-btn" data-format="bold" title="Bold">
+                        <i class="bx bx-bold"></i>
+                    </button>
+                    <button type="button" class="toolbar-btn" data-format="italic" title="Italic">
+                        <i class="bx bx-italic"></i>
+                    </button>
+                    <button type="button" class="toolbar-btn" data-format="underline" title="Underline">
+                        <i class="bx bx-underline"></i>
+                    </button>
+                    <button type="button" class="toolbar-btn" data-format="insertUnorderedList" title="Bullet List">
+                        <i class="bx bx-list-ul"></i>
+                    </button>
+                    <button type="button" class="toolbar-btn" data-format="insertOrderedList" title="Numbered List">
+                        <i class="bx bx-list-ol"></i>
+                    </button>
+                </div>
+                <textarea class="form-control border-0" id="description" name="description" placeholder="Describe the room's features, amenities, and unique selling points..."></textarea>
+            </div>
+
+            <div class="form-text">
+                Include details about room size, bed types, view, bathroom features, and any special amenities.
+            </div>
+        </div>
+
+        <!-- Room Amenities Section -->
+        <div class="form-section">
+            <h6 class="section-title">Room Amenities</h6>
+
+            <div class="amenities-list">
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-wifi"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="wifi" id="amenity_wifi" name="amenities">
+                        <label class="form-check-label" for="amenity_wifi">
+                            Free Wi-Fi
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-tv"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="tv" id="amenity_tv" name="amenities">
+                        <label class="form-check-label" for="amenity_tv">
+                            Flat-screen TV
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-wind"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="air_conditioning" id="amenity_ac" name="amenities">
+                        <label class="form-check-label" for="amenity_ac">
+                            Air Conditioning
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-fridge"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="minibar" id="amenity_minibar" name="amenities">
+                        <label class="form-check-label" for="amenity_minibar">
+                            Minibar
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-coffee"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="coffee_maker" id="amenity_coffee" name="amenities">
+                        <label class="form-check-label" for="amenity_coffee">
+                            Coffee Maker
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-lock-alt"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="safe" id="amenity_safe" name="amenities">
+                        <label class="form-check-label" for="amenity_safe">
+                            In-room Safe
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-bath"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="bathtub" id="amenity_bathtub" name="amenities">
+                        <label class="form-check-label" for="amenity_bathtub">
+                            Bathtub
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-shower"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="shower" id="amenity_shower" name="amenities">
+                        <label class="form-check-label" for="amenity_shower">
+                            Rainfall Shower
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-closet"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="wardrobe" id="amenity_wardrobe" name="amenities">
+                        <label class="form-check-label" for="amenity_wardrobe">
+                            Wardrobe
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-water"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="ocean_view" id="amenity_ocean_view" name="amenities">
+                        <label class="form-check-label" for="amenity_ocean_view">
+                            Ocean View
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-food-menu"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="room_service" id="amenity_room_service" name="amenities">
+                        <label class="form-check-label" for="amenity_room_service">
+                            Room Service
+                        </label>
+                    </div>
+                </div>
+
+                <div class="amenity-item">
+                    <div class="amenity-icon">
+                        <i class="bx bx-accessibility"></i>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="accessibility" id="amenity_accessibility" name="amenities">
+                        <label class="form-check-label" for="amenity_accessibility">
+                            Accessible
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="card-footer bg-white py-3">
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'room_list' %}" class="btn btn-light-luxe">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-luxe">
+                    <i class="bx bx-plus-circle me-1"></i> Create Room
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Room image preview
+    const roomImage = document.getElementById('room_image');
+    const roomPreview = document.getElementById('room-image-preview');
+    const removeButton = document.getElementById('remove-image');
+
+    roomImage.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                // Remove icon
+                roomPreview.querySelector('i').style.display = 'none';
+
+                // Create image if it doesn't exist
+                let img = roomPreview.querySelector('img');
+                if (!img) {
+                    img = document.createElement('img');
+                    roomPreview.appendChild(img);
+                }
+
+                // Set image source
+                img.src = e.target.result;
+
+                // Show remove button
+                removeButton.style.display = 'flex';
+            }
+
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    // Remove room image
+    removeButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        // Remove image
+        const img = roomPreview.querySelector('img');
+        if (img) {
+            img.remove();
+        }
+
+        // Show icon
+        roomPreview.querySelector('i').style.display = 'block';
+
+        // Hide remove button
+        this.style.display = 'none';
+
+        // Clear file input
+        roomImage.value = '';
+    });
+
+    // Simple rich text editor for description
+    const description = document.getElementById('description');
+    const toolbarButtons = document.querySelectorAll('.toolbar-btn');
+
+    toolbarButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const command = this.dataset.format;
+            document.execCommand(command, false, null);
+            description.focus();
+        });
+    });
+
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Validate required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            if (!field.value) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        // Validate price format
+        const priceField = document.getElementById('price_per_night');
+        if (priceField.value && isNaN(parseFloat(priceField.value))) {
+            priceField.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    // Live validation for price field
+    const priceField = document.getElementById('price_per_night');
+    priceField.addEventListener('input', function() {
+        if (this.value && isNaN(parseFloat(this.value))) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Room type change handler - could adjust default amenities based on room type
+    const roomTypeSelect = document.getElementById('room_type');
+    roomTypeSelect.addEventListener('change', function() {
+        const selectedType = this.value;
+
+        // Example: Pre-select certain amenities based on room type
+        if (selectedType === 'Suite' || selectedType === 'Executive Suite' || selectedType === 'Presidential Suite') {
+            document.getElementById('amenity_minibar').checked = true;
+            document.getElementById('amenity_coffee').checked = true;
+            document.getElementById('amenity_bathtub').checked = true;
+        } else if (selectedType === 'Deluxe') {
+            document.getElementById('amenity_coffee').checked = true;
+        }
+
+        // Add default price suggestions based on room type
+        const priceField = document.getElementById('price_per_night');
+        if (!priceField.value) {
+            switch(selectedType) {
+                case 'Standard':
+                    priceField.value = '99.00';
+                    break;
+                case 'Deluxe':
+                    priceField.value = '149.00';
+                    break;
+                case 'Suite':
+                    priceField.value = '199.00';
+                    break;
+                case 'Executive Suite':
+                    priceField.value = '249.00';
+                    break;
+                case 'Presidential Suite':
+                    priceField.value = '499.00';
+                    break;
+                case 'Family Room':
+                    priceField.value = '179.00';
+                    break;
+                case 'Connecting Room':
+                    priceField.value = '189.00';
+                    break;
+                case 'Accessible Room':
+                    priceField.value = '119.00';
+                    break;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
