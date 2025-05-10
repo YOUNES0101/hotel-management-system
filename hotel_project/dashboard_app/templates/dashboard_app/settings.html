@@ -1,0 +1,138 @@
+{% extends "dashboard_app/base.html" %} {% load static %} {% block title
+%}Settings - HORIZONH{% endblock %} {% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+            Hotel Settings
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- General Settings -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    General Settings
+                </h3>
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label
+                            for="hotel_name"
+                            class="block text-sm font-medium text-gray-700"
+                            >Hotel Name</label
+                        >
+                        <input
+                            type="text"
+                            name="hotel_name"
+                            id="hotel_name"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            for="contact_email"
+                            class="block text-sm font-medium text-gray-700"
+                            >Contact Email</label
+                        >
+                        <input
+                            type="email"
+                            name="contact_email"
+                            id="contact_email"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            for="contact_phone"
+                            class="block text-sm font-medium text-gray-700"
+                            >Contact Phone</label
+                        >
+                        <input
+                            type="tel"
+                            name="contact_phone"
+                            id="contact_phone"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            for="address"
+                            class="block text-sm font-medium text-gray-700"
+                            >Address</label
+                        >
+                        <textarea
+                            name="address"
+                            id="address"
+                            rows="3"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        ></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Booking Settings -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    Booking Settings
+                </h3>
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label
+                            for="check_in_time"
+                            class="block text-sm font-medium text-gray-700"
+                            >Default Check-in Time</label
+                        >
+                        <input
+                            type="time"
+                            name="check_in_time"
+                            id="check_in_time"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            for="check_out_time"
+                            class="block text-sm font-medium text-gray-700"
+                            >Default Check-out Time</label
+                        >
+                        <input
+                            type="time"
+                            name="check_out_time"
+                            id="check_out_time"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            for="max_advance_days"
+                            class="block text-sm font-medium text-gray-700"
+                            >Maximum Advance Booking Days</label
+                        >
+                        <input
+                            type="number"
+                            name="max_advance_days"
+                            id="max_advance_days"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-6">
+            <button
+                type="submit"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+                Save Settings
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

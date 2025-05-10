@@ -39,10 +39,17 @@ class room(models.Model): # Renamed class to Room
 
 class reservation(models.Model):
     client = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    room = models.ForeignKey(room, on_delete=models.CASCADE) # Updated ForeignKey to Room
+    room = models.ForeignKey(room, on_delete=models.CASCADE)
+    room_number = models.CharField(max_length=10, null=True, blank=True)  # Allow null initially
     check_in_date = models.DateField()
     check_out_date = models.DateField()
 
+    def save(self, *args, **kwargs):
+        if not self.room_number and self.room:
+            self.room_number = self.room.room_number
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Reservation by ( {self.client.last_name} {self.client.first_name} ) for {self.room.room_number}"
+        room_num = self.room_number or self.room.room_number
+        return f"Reservation by {self.client.last_name} {self.client.first_name} for Room {room_num}"
 

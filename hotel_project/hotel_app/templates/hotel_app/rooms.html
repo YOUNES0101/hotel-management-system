@@ -1,0 +1,2657 @@
+{% extends "hotel_app/base2.html" %} {% load static %} {% block title %}Chambres
+& Suites - HORIZONH{% endblock %} {% block extra_css %}
+<style>
+    /* Base Variables */
+    :root {
+        --room-bg-color: #f8f5f0;
+        --card-bg-color: #ffffff;
+        --primary-accent: #b8945f;
+        --primary-accent-dark: #9a7641;
+        --primary-accent-light: rgba(184, 148, 95, 0.1);
+        --text-dark: #2c2c2c;
+        --text-medium: #555555;
+        --text-light: #777777;
+        --success-color: #2a9d8f;
+        --error-color: #e76f51;
+        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.08);
+        --border-radius: 8px;
+        --border-radius-lg: 12px;
+        --border-radius-xl: 24px;
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 1rem;
+        --spacing-md: 2rem;
+        --spacing-lg: 3rem;
+        --transition-fast: 0.2s ease;
+        --transition-medium: 0.3s ease;
+        --transition-slow: 0.5s ease;
+        --font-serif: "Playfair Display", serif;
+    }
+
+    /* Section Styles */
+    .rooms-section {
+        padding: 6rem 0;
+        background-color: var(--room-bg-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .rooms-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("{% static 'hotel_app/images/subtle-pattern.png' %}");
+        opacity: 0.1;
+        pointer-events: none;
+    }
+
+    .rooms-section::after {
+        content: "";
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(circle, rgba(184, 148, 95, 0.05) 0%, rgba(184, 148, 95, 0.02) 50%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .geometric-shape {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(45deg, rgba(184, 148, 95, 0.03), rgba(184, 148, 95, 0.07));
+        filter: blur(40px);
+        pointer-events: none;
+        z-index: 0;
+        animation: floatAnimation 15s infinite alternate ease-in-out;
+    }
+
+    @keyframes floatAnimation {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        100% {
+            transform: translate(20px, 20px) scale(1.05);
+        }
+    }
+
+    .geometric-shape:nth-child(1) {
+        width: 400px;
+        height: 400px;
+        bottom: -100px;
+        left: -150px;
+        animation-duration: 20s;
+    }
+
+    .geometric-shape:nth-child(2) {
+        width: 300px;
+        height: 300px;
+        top: 20%;
+        right: -100px;
+        background: linear-gradient(45deg, rgba(184, 148, 95, 0.03), rgba(242, 233, 218, 0.07));
+        animation-duration: 15s;
+        animation-delay: 2s;
+    }
+
+    .geometric-shape:nth-child(3) {
+        width: 250px;
+        height: 250px;
+        top: 60%;
+        left: 10%;
+        background: linear-gradient(135deg, rgba(242, 233, 218, 0.05), rgba(184, 148, 95, 0.03));
+        animation-duration: 18s;
+        animation-delay: 1s;
+    }
+
+    .section__title {
+        margin-top: 4.8rem;
+        margin-left: -5.287rem;
+        margin-right: -5.287rem;
+        margin-bottom: 1.5rem;
+        padding: 0 2rem;
+    }
+
+    .section__header {
+        margin-left: -5.287rem;
+        margin-right: -5.287rem;
+        padding: 2rem 0;
+    }
+
+    .section__description {
+        padding: 0 2rem;
+        margin-bottom: 2rem;
+        color: #ffffff;
+    }
+
+    /* Filter Panel Styling */
+    .filter-panel {
+        background-color: white;
+        border-radius: var(--border-radius-lg);
+        padding: 2.5rem;
+        margin-bottom: 5rem;
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(184, 148, 95, 0.1);
+        position: relative;
+        z-index: 10;
+        margin-top: -2rem;
+    }
+
+    .filter-panel__title {
+        font-family: var(--font-serif);
+        font-size: 1.5rem;
+        color: var(--primary-accent);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+
+    .filter-panel__title::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary-accent), transparent);
+    }
+
+    .room-filters {
+        margin-top: 1.5rem;
+        /* Pull content up */
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        align-items: start;
+        /* Change from end to start */
+    }
+
+    /* Custom Select Styling */
+    .filter-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        /* Reduced from 0.75rem */
+        font-weight: 500;
+        color: var(--text-dark);
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .filter-labela {
+        display: block;
+        margin-bottom: 2.25rem;
+        font-weight: 500;
+        color: var(--text-dark);
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    /* Custom Dropdown Styling */
+    .custom-dropdown {
+        position: relative;
+        width: 100%;
+        font-family: var(--font-primary);
+        z-index: 20;
+    }
+
+    .custom-dropdown-selected {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.875rem 1rem;
+        background-color: white;
+        border: 1px solid rgba(184, 148, 95, 0.3);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        color: var(--text-dark);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    }
+
+    .custom-dropdown-selected:hover {
+        border-color: var(--primary-accent);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .custom-dropdown-selected i {
+        transition: transform 0.3s ease;
+    }
+
+    .custom-dropdown.active .custom-dropdown-selected i {
+        transform: rotate(180deg);
+    }
+
+    .custom-dropdown-options {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        width: 100%;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        z-index: 30;
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid rgba(184, 148, 95, 0.2);
+    }
+
+    .custom-dropdown.active .custom-dropdown-options {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-option {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(184, 148, 95, 0.05);
+    }
+
+    .dropdown-option:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-option:hover {
+        background-color: rgba(184, 148, 95, 0.05);
+        color: var(--primary-accent);
+    }
+
+    .dropdown-option[data-selected="true"] {
+        background-color: rgba(184, 148, 95, 0.1);
+        color: var(--primary-accent);
+        font-weight: 500;
+    }
+
+    .hidden-select {
+        display: none;
+        visibility: hidden;
+        position: absolute;
+    }
+
+    /* Pour Chrome/Safari */
+    select.custom-select {
+        -webkit-appearance: none;
+    }
+
+    select.custom-select::-webkit-listbox {
+        max-height: calc(48px * 4);
+        /* Hauteur pour 4 options */
+        overflow-y: auto;
+    }
+
+    /* Pour Firefox */
+    @-moz-document url-prefix() {
+        select.custom-select {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-accent) #f1f1f1;
+        }
+
+        select.custom-select:-moz-focusring {
+            color: transparent;
+            text-shadow: 0 0 0 var(--text-dark);
+        }
+
+        select.custom-select[size] {
+            height: 120px;
+            /* Reform: fixed height for 3 visible options */
+        }
+    }
+
+    /* Scrollbar personnalisée */
+    select.custom-select::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    select.custom-select::-webkit-scrollbar-thumb {
+        background: var(--primary-accent);
+        border-radius: 4px;
+    }
+
+    select.custom-select::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-accent-dark);
+    }
+
+    .select-icon {
+        position: absolute;
+        right: 1rem;
+        top: 25%;
+        /* Modifié de 50% à 40% pour monter la flèche */
+        transform: translateY(-50%);
+        color: var(--primary-accent);
+        pointer-events: none;
+        margin-left: 0.5rem;
+    }
+
+    /* Price Range Styling */
+    .price-range-container {
+        position: relative;
+        padding: 0.5rem 0 1rem;
+        margin-top: 2rem;
+    }
+
+    .price-inputs {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .price-input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 45%;
+    }
+
+    .price-currency {
+        position: absolute;
+        left: 0.75rem;
+        color: var(--text-medium);
+        font-weight: 500;
+    }
+
+    .price-input {
+        width: 100%;
+        padding: 0.75rem 0.75rem 0.75rem 1.75rem;
+        border: 1px solid rgba(184, 148, 95, 0.3);
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary-accent);
+        text-align: left;
+        transition: all var(--transition-fast);
+    }
+
+    .price-input:focus {
+        outline: none;
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 3px rgba(184, 148, 95, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .price-input {
+        transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .price-input::-webkit-inner-spin-button,
+    .price-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .price-input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .price-label {
+        position: absolute;
+        top: -0.6rem;
+        left: 0.75rem;
+        background-color: white;
+        padding: 0 0.5rem;
+        font-size: 0.7rem;
+        color: var(--text-medium);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .price-range-divider {
+        width: 15px;
+        height: 2px;
+        background-color: var(--text-light);
+    }
+
+    .price-slider-container {
+        position: relative;
+        height: 6px;
+        padding: 1rem 0;
+    }
+
+    .price-slider-track {
+        position: relative;
+        height: 6px;
+        background-color: rgba(184, 148, 95, 0.2);
+        border-radius: 3px;
+    }
+
+    .price-slider-fill {
+        position: absolute;
+        height: 100%;
+        background-color: var(--primary-accent);
+        border-radius: 3px;
+    }
+
+    .price-slider-handles {
+        position: relative;
+    }
+
+    .price-slider {
+        position: absolute;
+        top: -6px;
+        width: 100%;
+        height: 6px;
+        -webkit-appearance: none;
+        pointer-events: none;
+        background: transparent;
+        outline: none;
+    }
+
+    .price-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid var(--primary-accent);
+        cursor: pointer;
+        pointer-events: auto;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .price-slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid var(--primary-accent);
+        cursor: pointer;
+        pointer-events: auto;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .price-slider-min {
+        z-index: 2;
+    }
+
+    .price-slider-max {
+        z-index: 1;
+    }
+
+    /* Capacity Options Styling */
+    .capacity-options {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .capacity-option {
+        flex: 1;
+        min-width: 60px;
+        cursor: pointer;
+    }
+
+    .capacity-option input {
+        display: none;
+    }
+
+    .capacity-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        border: 1px solid rgba(184, 148, 95, 0.3);
+        border-radius: var(--border-radius);
+        padding: 0.75rem 0.5rem;
+        transition: all var(--transition-fast);
+    }
+
+    .capacity-button i {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+        color: var(--text-medium);
+        transition: all var(--transition-fast);
+    }
+
+    .capacity-button span {
+        font-size: 0.85rem;
+        color: var(--text-medium);
+        transition: all var(--transition-fast);
+    }
+
+    .capacity-option input:checked+.capacity-button {
+        background-color: var(--primary-accent);
+        border-color: var(--primary-accent);
+    }
+
+    .capacity-option input:checked+.capacity-button i,
+    .capacity-option input:checked+.capacity-button span {
+        color: white;
+    }
+
+    .capacity-button:hover {
+        border-color: var(--primary-accent);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .capacity-button {
+        transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Filter Button Styling */
+    .filter-button {
+        background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-dark) 80%);
+        color: white;
+        border: none;
+        padding: 0.875rem 1.75rem;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 50px;
+        margin-top: 1rem;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        margin-top: 8rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent);
+        transition: left 0.8s ease;
+    }
+
+    .filter-button:hover::before {
+        left: 100%;
+    }
+
+    .filter-button--active {
+        transform: scale(0.98);
+    }
+
+    .filter-button--loading {
+        position: relative;
+        color: transparent !important;
+    }
+
+    .filter-button--loading::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Room Card Styles - Reorganized for better grouping */
+    .rooms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 3.5rem 2.5rem;
+        margin-top: 2rem;
+        max-height: 1200px;
+        overflow-y: auto;
+        padding: 0.5rem 1rem 2rem 0.5rem;
+        position: relative;
+        transition: all 0.5s ease-in-out;
+        perspective: 1000px;
+    }
+
+
+
+    .section-divider {
+        display: flex;
+        align-items: center;
+        margin: 0 auto 4rem;
+        max-width: 600px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(184, 148, 95, 0.3), transparent);
+    }
+
+    .section-divider .divider-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(184, 148, 95, 0.15);
+        margin: 0 1.5rem;
+        color: var(--primary-accent);
+        font-size: 1.5rem;
+    }
+
+    .rooms-grid::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(to bottom, transparent, rgba(248, 245, 240, 0.5));
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    /* Customize scrollbar */
+    .rooms-grid::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .rooms-grid::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .rooms-grid::-webkit-scrollbar-thumb {
+        background: var(--primary-accent);
+        border-radius: 4px;
+    }
+
+    .rooms-grid::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-accent-dark);
+    }
+
+    /* Room Card Improvements */
+    .room-card {
+        background-color: var(--card-bg-color);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(184, 148, 95, 0.05);
+        position: relative;
+        border: 1px solid var(--primary-accent-light);
+        opacity: 0;
+        transform: translateY(20px) rotateX(2deg);
+        transform-origin: bottom center;
+        animation: fadeInUp 0.6s ease forwards;
+        backface-visibility: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .room-card:hover {
+        transform: translateY(-8px) rotateX(0deg);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(184, 148, 95, 0.1);
+        border-color: rgba(184, 148, 95, 0.3);
+    }
+
+    .room-card:hover .room-image {
+        transform: scale(1.05);
+        filter: brightness(1.05);
+    }
+
+    .room-image {
+        transition: transform 0.8s ease;
+    }
+
+    .room-card--loading {
+        position: relative;
+    }
+
+    .room-card--loading::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg,
+                transparent 25%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        z-index: 1;
+    }
+
+    /* Accessibility Improvements */
+    .room-card:focus-within {
+        outline: 3px solid var(--primary-accent);
+        outline-offset: 4px;
+    }
+
+    .book-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px var(--primary-accent-light),
+            0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Consistent Image Container */
+    .room-image-container {
+        position: relative;
+        overflow: hidden;
+        height: 280px;
+        background-color: var(--room-bg-color);
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.1);
+    }
+
+    .room-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, transparent 20%, transparent 80%, rgba(0, 0, 0, 0.3) 100%);
+        pointer-events: none;
+        opacity: 0.6;
+        transition: opacity 0.4s ease;
+    }
+
+    .room-card:hover .room-image-container::after {
+        opacity: 0.3;
+    }
+
+    .room-card:hover .room-image-container {
+        box-shadow: inset 0 -10px 15px -10px rgba(184, 148, 95, 0.2);
+    }
+
+    .room-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .room-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background-color: var(--primary-accent);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        z-index: 2;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transform: translateY(0);
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        backdrop-filter: blur(8px);
+        background-color: rgba(184, 148, 95, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .room-card:hover .room-badge {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Room Content Styles */
+    .room-content {
+        padding: var(--spacing-md);
+        position: relative;
+        z-index: 2;
+        background-color: var(--card-bg-color);
+        border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+    }
+
+    .room-content::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(to top, var(--card-bg-color), transparent);
+        z-index: 1;
+    }
+
+    /* Typography Refinements */
+    .room-type {
+        font-family: var(--font-serif);
+        font-size: 1.35rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--text-dark);
+        position: relative;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
+
+    .room-type::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-accent), transparent);
+        transition: width 0.3s ease;
+    }
+
+    .room-card:hover .room-type::after {
+        width: 100%;
+    }
+
+    .room-number {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+        padding-left: 0.5rem;
+    }
+
+    .room-number::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 80%;
+        background-color: var(--primary-accent-light);
+        border-radius: 2px;
+    }
+
+    .room-description {
+        color: var(--text-medium);
+        font-weight: 300;
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+    }
+
+    /* Room Features Styles */
+    .room-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--primary-accent-light);
+    }
+
+    .room-feature {
+        transition: transform 0.3s ease;
+    }
+
+    .room-card:hover .room-feature {
+        animation: featurePop 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        animation-fill-mode: backwards;
+    }
+
+    .room-card:hover .room-feature:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .room-card:hover .room-feature:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .room-card:hover .room-feature:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    @keyframes featurePop {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .room-feature {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-medium);
+    }
+
+    .room-feature i {
+        color: var(--primary-accent);
+    }
+
+    /* Room Footer Styles */
+    .room-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .room-price {
+        font-family: var(--font-serif);
+        color: var(--primary-accent);
+        font-size: 1.5rem;
+        font-weight: 600;
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .room-card:hover .room-price {
+        transform: scale(1.05);
+        color: var(--primary-accent-dark);
+    }
+
+    .room-price span {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        font-weight: normal;
+    }
+
+    /* Enhanced Status Badges */
+    .room-availability {
+        padding: 0.5rem 1.2rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .room-availability::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .room-card:hover .room-availability::before {
+        transform: translateX(0);
+    }
+
+    .room-availability.available {
+        background-color: rgba(42, 157, 143, 0.2);
+        color: #1a735e;
+        /* Darker green for better contrast */
+        border-left: 3px solid #2a9d8f;
+    }
+
+    .room-availability.unavailable {
+        background-color: rgba(231, 111, 81, 0.2);
+        color: #c0392b;
+        /* Darker red for better contrast */
+        border-left: 3px solid #e76f51;
+    }
+
+    /* Button Styles */
+    .book-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.9rem;
+        background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-dark) 100%);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .book-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.8s ease;
+    }
+
+    .book-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(184, 148, 95, 0.25);
+    }
+
+    .book-btn:hover::before {
+        left: 100%;
+    }
+
+    .book-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 5px 15px rgba(184, 148, 95, 0.15);
+    }
+
+    .book-btn[disabled] {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+        .rooms-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .room-image-container {
+            height: 280px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .rooms-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .room-image-container {
+            height: 240px;
+        }
+
+        .room-features {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .section__header {
+            margin-left: -2rem;
+            margin-right: -2rem;
+        }
+
+        .filter-panel {
+            padding: 1.5rem;
+            margin: -3rem 1rem 2rem;
+        }
+
+        .room-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .price-inputs {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .price-input-group {
+            width: 100%;
+        }
+
+        .capacity-options {
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .capacity-option {
+            flex: 0 0 auto;
+            min-width: 80px;
+        }
+
+        .title-light {
+            font-size: 2.5rem;
+            /* Ajusté pour la version mobile */
+        }
+
+        .title-bold {
+            font-size: 2.5rem;
+            /* Ajusté pour la version mobile */
+        }
+    }
+
+    @media (max-width: 576px) {
+        .room-content {
+            padding: var(--spacing-sm);
+        }
+
+        .room-type {
+            font-size: 1.25rem;
+        }
+
+        .room-price {
+            font-size: 1.25rem;
+        }
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+    }
+
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: linear-gradient(135deg, #fff8f1 0%, #f7f3ed 100%);
+        padding: 2.8rem 3.8rem 2.8rem 3.8rem;
+        border-radius: 28px;
+        width: 100%;
+        max-width: 740px;
+        min-width: 320px;
+        box-shadow: 0 24px 60px 0 rgba(184, 148, 95, 0.13),
+            0 2px 8px 0 rgba(0, 0, 0, 0.04);
+        min-height: 0;
+        max-height: 600px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        border: 1.5px solid #e7e2d9;
+        transition: box-shadow 0.2s;
+    }
+
+    #reservationModal .modal-content h2 {
+        font-size: 2.2rem;
+        margin-bottom: 2.1rem;
+        font-weight: 900;
+        text-align: center;
+        letter-spacing: 0.01em;
+        color: #b8945f;
+        border-bottom: 2px solid #f2e9da;
+        padding-bottom: 1.1rem;
+        margin-top: 0;
+        background: linear-gradient(90deg, #fff8f1 60%, #f7f3ed 100%);
+        border-radius: 12px 12px 0 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.7rem;
+        position: relative;
+    }
+
+    .form-label {
+        position: absolute;
+        left: 18px;
+        top: 12px;
+        font-size: 1.08rem;
+        font-weight: 600;
+        color: #b8945f;
+        background: transparent;
+        pointer-events: none;
+        transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2;
+    }
+
+    .form-control:focus+.form-label,
+    .form-control:not(:placeholder-shown)+.form-label {
+        top: -13px;
+        left: 10px;
+        font-size: 0.93rem;
+        color: #9a7641;
+        background: #fff8f1;
+        padding: 0 6px;
+        border-radius: 6px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1.1rem 1.1rem 0.6rem 1.1rem;
+        border: 1.5px solid #e0d6c3;
+        border-radius: 12px;
+        font-size: 1.13rem;
+        color: #2c2c2c;
+        background: #fff;
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(184, 148, 95, 0.03);
+        transition: border-color 0.18s, box-shadow 0.18s;
+    }
+
+    .form-control:focus {
+        border-color: #b8945f;
+        box-shadow: 0 0 0 3px #f2e9da;
+        outline: none;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.7rem;
+    }
+
+    .form-row .form-group {
+        margin-bottom: 0;
+    }
+
+    #totalPriceContainer {
+        display: none;
+        margin-bottom: 1.7rem;
+    }
+
+    #totalPrice {
+        background: #f8f5f0;
+        font-weight: 700;
+        color: #b8945f;
+    }
+
+    #paymentSection {
+        margin-bottom: 1.7rem;
+        background: #f8f5f0;
+        border-radius: 14px;
+        padding: 1.2rem 1.2rem 0.7rem 1.2rem;
+        box-shadow: 0 2px 8px rgba(184, 148, 95, 0.04);
+        border: 1px solid #f2e9da;
+    }
+
+    #card-element {
+        height: 48px;
+        padding: 12px 16px;
+        font-size: 1.13rem;
+        border-radius: 10px;
+        border: 1.5px solid #e0d6c3;
+        background: #fff;
+        margin-bottom: 0.7rem;
+    }
+
+    .payment-fields {
+        display: flex;
+        gap: 1.2rem;
+        margin-top: 0.7rem;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1.5rem;
+        margin-top: 2.5rem;
+    }
+
+    .btn {
+        padding: 1.1rem 2.6rem;
+        border: none;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 1.13rem;
+        cursor: pointer;
+        transition: all 0.18s;
+        box-shadow: 0 2px 8px rgba(184, 148, 95, 0.07);
+        letter-spacing: 0.01em;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #b8945f 60%, #e7e2d9 100%);
+        color: #fff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #9a7641 60%, #b8945f 100%);
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: #f2e9da;
+        color: #b8945f;
+        border: 1.5px solid #e7e2d9;
+    }
+
+    .btn-secondary:hover {
+        background: #e7e2d9;
+        color: #9a7641;
+    }
+
+    /* Filter Icons */
+    .filter-group .filter-label::before {
+        font-family: "boxicons";
+        margin-right: 0.5rem;
+        color: var(--primary-accent);
+        vertical-align: middle;
+    }
+
+    .filter-group:nth-child(1) .filter-label::before {
+        content: "\eb9c";
+        /* bed icon */
+    }
+
+    .filter-group:nth-child(2) .filter-label::before {
+        content: "\e901";
+        /* wallet icon */
+    }
+
+    .filter-group:nth-child(3) .filter-label::before {
+        content: "\eb2f";
+        /* group icon */
+    }
+
+    /* Loading Animation */
+    @keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    .room-card.loading {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .room-card.loading::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0) 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+
+    /* Card entrance animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Stagger the animations */
+    .room-card:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+
+    .room-card:nth-child(3) {
+        animation-delay: 0.2s;
+    }
+
+    .room-card:nth-child(4) {
+        animation-delay: 0.3s;
+    }
+
+    .room-card:nth-child(5) {
+        animation-delay: 0.4s;
+    }
+
+    .room-card:nth-child(6) {
+        animation-delay: 0.5s;
+    }
+
+    /* Utility class for screen readers */
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    /* Focus styles for interactive elements */
+    .room-card:focus-within {
+        outline: 3px solid var(--primary-accent);
+        outline-offset: 4px;
+    }
+
+    .filter-button:focus {
+        outline: 2px solid var(--primary-accent);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px rgba(184, 148, 95, 0.2);
+    }
+
+    /* High contrast mode adjustments */
+    @media (forced-colors: active) {
+        .room-card {
+            border: 2px solid CanvasText;
+        }
+
+        .book-btn {
+            border: 2px solid ButtonText;
+        }
+
+        .room-availability {
+            border: 1px solid CanvasText;
+        }
+    }
+
+    /* Hero Section Styles */
+    .section--rooms-hero {
+        position: relative;
+        min-height: 100vh;
+        /* Increased from 60vh to 100vh */
+        display: flex;
+        align-items: center;
+        color: white;
+        overflow: hidden;
+        padding: 12rem 0;
+        /* Increased from 8rem to 12rem */
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('{% static "hotel_app/images/test.jpg" %}') center/cover no-repeat;
+        filter: blur(3px);
+        transform: scale(1.1);
+        z-index: 0;
+        transition: transform 8s ease-in-out;
+        animation: subtle-pan 25s infinite alternate ease-in-out;
+    }
+
+    @keyframes subtle-pan {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg,
+                rgba(0, 0, 0, 0.6),
+                rgba(0, 0, 0, 0.7),
+                rgba(184, 148, 95, 0.2));
+        z-index: 1;
+        animation: gradientShift 15s infinite alternate ease-in-out;
+    }
+
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .section__header {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        opacity: 0;
+        animation: fadeInUp 1s ease 0.3s forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section__title {
+        font-family: var(--font-serif);
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .title-light {
+        font-weight: 400;
+        font-size: 3.5rem;
+        /* Modifié pour correspondre à title-bold */
+        display: inline;
+        margin-right: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .title-bold {
+        font-weight: 700;
+        font-size: 3.5rem;
+        color: #ffffff;
+        display: inline;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(90deg, #ffffff, #f8e8d0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmerText 5s infinite alternate;
+    }
+
+    @keyframes shimmerText {
+        0% {
+            background-position: -100px;
+        }
+
+        100% {
+            background-position: 100px;
+        }
+    }
+
+    .section__description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .header-cta {
+        margin-top: 2rem;
+    }
+
+    .btn--discover {
+        background-color: var(--color-primary);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: all 0.3s ease;
+        border: 2px solid var(--color-primary);
+        font-family: var(--font-sans);
+    }
+
+    .btn--discover i {
+        margin-left: 0.8rem;
+        /* Move icon slightly to the left */
+    }
+
+    .btn--discover:hover {
+        background-color: transparent;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn--discover:hover i {
+        animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .title-light {
+            font-size: 2.5rem;
+            /* Ajusté pour la version mobile */
+        }
+
+        .title-bold {
+            font-size: 2.5rem;
+            /* Ajusté pour la version mobile */
+        }
+
+        .section__description {
+            font-size: 1rem;
+        }
+    }
+
+    /* Ajout des styles pour le paiement */
+    #card-element {
+        padding: 12px;
+        border: 1px solid rgba(184, 148, 95, 0.3);
+        border-radius: var(--border-radius);
+        background: white;
+    }
+
+    .payment-error {
+        color: var(--error-color);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* Add these styles for date picker */
+    .date-available::-webkit-calendar-picker-indicator {
+        background-color: rgba(42, 157, 143, 0.2);
+    }
+
+    .date-unavailable::-webkit-calendar-picker-indicator {
+        background-color: rgba(231, 111, 81, 0.2);
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+    input[type="date"].valid-date {
+        border-color: var(--success-color);
+        background-color: rgba(42, 157, 143, 0.1);
+    }
+
+    input[type="date"].invalid-date {
+        border-color: var(--error-color);
+        background-color: rgba(231, 111, 81, 0.1);
+    }
+</style>
+{% endblock %} {% block content %}
+<!-- Rooms Header avec arrière-plan immersif -->
+<section class="section section--rooms-hero">
+    <div class="hero-background"></div>
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <header class="section__header">
+            <h2 class="section__title">
+                <span class="title-bold">Découvrez Nos Chambres & Suites</span>
+            </h2>
+            <p class="section__description">
+                Découvrez un luxe inégalé dans nos chambres et suites
+                méticuleusement conçues, offrant chacune un mélange parfait de
+                confort, d'élégance et d'équipements modernes pour un séjour
+                inoubliable.
+            </p>
+            <div class="header-cta">
+                <a href="#roomsFilters" class="btn btn--discover">
+                    <span>Explorer nos chambres</span>
+                    <i class="bx bx-chevron-down"></i>
+                </a>
+            </div>
+        </header>
+    </div>
+</section>
+
+<!-- Enhanced Filters Section -->
+<section class="rooms-section" id="roomsFilters">
+    <div class="geometric-shape"></div>
+    <div class="geometric-shape"></div>
+    <div class="geometric-shape"></div>
+    <div class="container">
+        <!-- Elegant Filter Panel -->
+        <div class="filter-panel">
+            <h3 class="filter-panel__title">Affinez Votre Recherche</h3>
+
+            <div class="room-filters">
+                <!-- Enhanced Room Type Filter -->
+                <div class="filter-group" role="search" aria-label="Filtres de chambres">
+                    <label class="filter-label" id="room-type-label">
+                        Type de chambre
+                        <span class="visually-hidden">Sélectionnez un type de chambre</span>
+                    </label>
+                    <div class="custom-dropdown">
+                        <div class="custom-dropdown-selected" id="roomTypeSelected">
+                            <span>Tous les types</span>
+                            <i class="bx bx-chevron-down"></i>
+                        </div>
+                        <div class="custom-dropdown-options" id="roomTypeOptions">
+                            <div class="dropdown-option" data-value="" data-selected="true">Tous les types</div>
+                            <div class="dropdown-option" data-value="Executive">Executive Suite</div>
+                            <div class="dropdown-option" data-value="Presidential">Presidential Suite</div>
+                            <div class="dropdown-option" data-value="Family">Family Room</div>
+                            <div class="dropdown-option" data-value="Connection">Connection Room</div>
+                            <div class="dropdown-option" data-value="Accessible">Accessible Room</div>
+                            <div class="dropdown-option" data-value="Standard">Standard</div>
+                            <div class="dropdown-option" data-value="Deluxe">Deluxe</div>
+                            <div class="dropdown-option" data-value="Suite">Suite</div>
+                        </div>
+                        <!-- Hidden select for form submission -->
+                        <select class="hidden-select" id="roomTypeSelect" aria-labelledby="room-type-label"
+                            aria-controls="roomsContainer">
+                            <option value="" selected>Tous les types</option>
+                            <option value="Executive">Executive Suite</option>
+                            <option value="Presidential">Presidential Suite</option>
+                            <option value="Family">Family Room</option>
+                            <option value="Connection">Connection Room</option>
+                            <option value="Accessible">Accessible Room</option>
+                            <option value="Standard">Standard</option>
+                            <option value="Deluxe">Deluxe</option>
+                            <option value="Suite">Suite</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Enhanced Price Range Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Fourchette de prix</label>
+                    <div class="price-range-container">
+                        <div class="price-inputs">
+                            <div class="price-input-group">
+                                <span class="price-currency">€</span>
+                                <input type="number" id="minPrice" class="price-input" value="100" min="0" max="1000"
+                                    step="10" />
+                                <label class="price-label">Min</label>
+                            </div>
+                            <div class="price-range-divider"></div>
+                            <div class="price-input-group">
+                                <span class="price-currency">€</span>
+                                <input type="number" id="maxPrice" class="price-input" value="500" min="0" max="1000"
+                                    step="10" />
+                                <label class="price-label">Max</label>
+                            </div>
+                        </div>
+                        <div class="price-slider-container">
+                            <div class="price-slider-track">
+                                <div class="price-slider-fill"></div>
+                            </div>
+                            <div class="price-slider-handles">
+                                <input type="range" class="price-slider price-slider-min" id="priceFilterMin" min="0"
+                                    max="1000" step="10" value="100" />
+                                <input type="range" class="price-slider price-slider-max" id="priceFilterMax" min="0"
+                                    max="1000" step="10" value="500" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Capacity Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Capacité</label>
+                    <div class="capacity-options">
+                        <label class="capacity-option">
+                            <input type="radio" name="capacity" value="" checked />
+                            <span class="capacity-button">
+                                <i class="bx bx-user-check"></i>
+                                <span>Tous</span>
+                            </span>
+                        </label>
+                        <label class="capacity-option">
+                            <input type="radio" name="capacity" value="1" />
+                            <span class="capacity-button">
+                                <i class="bx bx-user"></i>
+                                <span>1</span>
+                            </span>
+                        </label>
+                        <label class="capacity-option">
+                            <input type="radio" name="capacity" value="2" />
+                            <span class="capacity-button">
+                                <i class="bx bx-user"></i>
+                                <span>2</span>
+                            </span>
+                        </label>
+                        <label class="capacity-option">
+                            <input type="radio" name="capacity" value="3" />
+                            <span class="capacity-button">
+                                <i class="bx bx-user"></i>
+                                <span>3</span>
+                            </span>
+                        </label>
+                        <label class="capacity-option">
+                            <input type="radio" name="capacity" value="4" />
+                            <span class="capacity-button">
+                                <i class="bx bx-user"></i>
+                                <span>4+</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Enhanced Filter Button -->
+                <div class="filter-group button-container">
+                    <button class="filter-button" id="applyFilters">
+                        <i class="bx bx-search-alt"></i>
+                        <span>Découvrir</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Divider -->
+        <div class="section-divider">
+            <div class="divider-icon">
+                <i class="bx bx-home-heart"></i>
+            </div>
+        </div>
+
+        <!-- Rooms Grid -->
+        <div class="rooms-grid" id="roomsContainer">
+            {% for room in rooms %}
+            <div class="room-card" role="article" aria-labelledby="room-title-{{ room.id }}"
+                data-type="{{ room.room_type }}" data-price="{{ room.price_per_night }}"
+                data-capacity="{{ room.capacity }}">
+                <div class="room-image-container">
+                    {% if room.is_featured %}
+                    <div class="room-badge">Recommandée</div>
+                    {% endif %}
+                    <img src="{% if room.image %}{{ room.image.url }}{% else %}{% static 'hotel_app/images/room1.jpg' %}{% endif %}"
+                        alt="Vue détaillée de {{ room.room_type }}" class="room-image" loading="lazy" />
+                </div>
+                <div class="room-content">
+                    <h3 class="room-type" id="room-title-{{ room.id }}">
+                        {{ room.room_type }}
+                    </h3>
+                    <p class="room-number">Chambre {{ room.room_number }}</p>
+                    <p class="room-description">
+                        {{ room.description|truncatechars:120 }}
+                    </p>
+                    <div class="room-features">
+                        <div class="room-feature">
+                            <i class="bx bx-user"></i>
+                            <span>Jusqu'à {{ room.capacity }} invités</span>
+                        </div>
+                        {% comment %}
+                        <div class="room-feature">
+                            <i class="bx bx-area"></i>
+                            <span>{{ room.size_sqm }} m²</span>
+                        </div>
+                        {% endcomment %} {% if room.has_wifi %}
+                        <div class="room-feature">
+                            <i class="bx bx-wifi"></i>
+                            <span>Wi-Fi gratuit</span>
+                        </div>
+                        {% endif %} {% if room.has_balcony %}
+                        <div class="room-feature">
+                            <i class="bx bx-landscape"></i>
+                            <span>Balcon privé</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="room-footer">
+                        <div class="room-price">
+                            {{ room.price_per_night }}€<span>/nuit</span>
+                        </div>
+                        <div class="room-availability available">
+                            Disponible
+                        </div>
+                    </div>
+                    <button class="book-btn"
+                        aria-label="Réserver la {{ room.room_type }} - {{ room.price_per_night }}€ par nuit"
+                        onclick="openModal('{{ room.id }}', {{ room.room_number }}, '{{ room.room_type }}', {{ room.price_per_night }})">
+                        <i class="bx bx-calendar" aria-hidden="true"></i>
+                        <span>Réserver maintenant</span>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info" style="grid-column: 1/-1; text-align: center; padding: 2rem">
+                Aucune chambre disponible correspondant à vos critères.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Modal de réservation -->
+<div class="modal" id="reservationModal">
+    <div class="modal-content">
+        <form id="reservationForm" autocomplete="off">
+            {% csrf_token %}
+
+            <input type="hidden" id="modalRoomId" name="room_id" />
+            <input type="hidden" id="modalRoomPrice" name="room_price" />
+            <input type="hidden" id="userId" name="user_id" value="{{ request.user.id }}" />
+
+            <div class="form-group">
+                <input type="text" id="modalRoomType" readonly class="form-control" placeholder=" "
+                    style="display: none" />
+                <label for="modalRoomType" class="form-label" style="display: none">Type de chambre</label>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="modalRoomNumber" readonly class="form-control" placeholder=" "
+                    style="display: none" />
+                <label for="modalRoomNumber" class="form-label" style="display: none">Numéro de chambre</label>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="flex: 1">
+                    <input type="date" id="checkInDate" name="check_in_date" required class="form-control"
+                        placeholder=" " onchange="calculateTotalPrice()" />
+                    <label for="checkInDate" class="form-label">Arrivée</label>
+                </div>
+                <div class="form-group" style="flex: 1">
+                    <input type="date" id="checkOutDate" name="check_out_date" required class="form-control"
+                        placeholder=" " onchange="calculateTotalPrice()" />
+                    <label for="checkOutDate" class="form-label">Départ</label>
+                </div>
+            </div>
+
+            <div class="form-group" id="totalPriceContainer">
+                <input type="text" id="totalPrice" readonly class="form-control" placeholder=" " />
+                <label for="totalPrice" class="form-label">Prix total</label>
+                <input type="hidden" id="totalAmount" name="total_amount" />
+            </div>
+
+            <div class="form-group" id="cardHolderGroup">
+                <input type="text" id="cardHolderName" name="card_holder_name" class="form-control" placeholder=" "
+                    required />
+                <label for="cardHolderName" class="form-label">Nom du titulaire</label>
+            </div>
+
+            <div class="form-group" id="paymentSection">
+                <fieldset style="border: none; padding: 0; margin: 0">
+                    <legend class="form-label" style="
+                            position: static;
+                            margin-bottom: 1.1rem;
+                            color: #b8945f;
+                            font-size: 1.13rem;
+                            font-weight: 700;
+                            letter-spacing: 0.01em;
+                        ">
+                        Informations de paiement
+                    </legend>
+
+                    <div class="form-group">
+                        <input type="text" id="cardNumber" name="card_number" class="form-control" placeholder=" "
+                            required maxlength="19" />
+                        <label for="cardNumber" class="form-label">Numéro de carte</label>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1">
+                            <input type="text" id="cardExpiry" name="card_expiry" class="form-control" placeholder=" "
+                                required pattern="(0[1-9]|1[0-2])/[0-9]{2}" maxlength="5" />
+                            <label for="cardExpiry" class="form-label">Date d'expiration (MM/AA)</label>
+                        </div>
+                        <div class="form-group" style="flex: 1">
+                            <input type="text" id="cardCvc" name="card_cvc" class="form-control" placeholder=" "
+                                required pattern="[0-9]{3}" maxlength="3" />
+                            <label for="cardCvc" class="form-label">CVC</label>
+                        </div>
+                    </div>
+
+                    <div id="card-errors" role="alert" class="payment-error"></div>
+                </fieldset>
+            </div>
+
+            <div class="modal-actions" style="
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 1.2rem;
+                    margin-top: 2.5rem;
+                ">
+                <button type="button" onclick="closeModal()" class="btn btn-secondary"
+                    style="flex: 1 1 160px; min-width: 120px">
+                    Annuler
+                </button>
+                <button type="submit" id="submit-button" class="btn btn-primary"
+                    style="flex: 2 1 220px; min-width: 160px">
+                    <span id="button-text">Payer et réserver</span>
+                    <div id="spinner" class="spinner hidden"></div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Populate modal info when opening modal (header supprimé)
+    function openModal(roomId, roomNumber, roomType, roomPrice) {
+        document.getElementById("modalRoomId").value = roomId;
+        document.getElementById("modalRoomType").value = roomType;
+        document.getElementById("modalRoomNumber").value = roomNumber;
+        document.getElementById("modalRoomPrice").value = roomPrice;
+        document.getElementById("reservationModal").classList.add("active");
+
+        // Initialize date pickers when modal opens
+        initializeDatePickers(roomId);
+        validateDates(); // Validation initiale
+    }
+
+    // Validation visuelle des dates
+    function validateDates() {
+        const checkIn = document.getElementById("checkInDate");
+        const checkOut = document.getElementById("checkOutDate");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let valid = true;
+        let inDate = checkIn.value ? new Date(checkIn.value) : null;
+        let outDate = checkOut.value ? new Date(checkOut.value) : null;
+        // Reset
+        checkIn.classList.remove("valid-date", "invalid-date");
+        checkOut.classList.remove("valid-date", "invalid-date");
+        // Check-in doit être >= aujourd'hui
+        if (!inDate || inDate < today) {
+            checkIn.classList.add("invalid-date");
+            valid = false;
+        } else {
+            checkIn.classList.add("valid-date");
+        }
+        // Check-out doit être > check-in
+        if (!outDate || !inDate || outDate <= inDate) {
+            checkOut.classList.add("invalid-date");
+            valid = false;
+        } else {
+            checkOut.classList.add("valid-date");
+        }
+        return valid;
+    }
+    document
+        .getElementById("checkInDate")
+        .addEventListener("input", validateDates);
+    document
+        .getElementById("checkOutDate")
+        .addEventListener("input", validateDates);
+
+    document
+        .getElementById("reservationForm")
+        .addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById("submit-button");
+            const spinner = document.getElementById("spinner");
+            const buttonText = document.getElementById("button-text");
+            const cardErrors = document.getElementById("card-errors");
+
+            // Valider les champs de paiement personnalisés
+            if (!validatePaymentFields()) {
+                return;
+            }
+
+            // Clear any previous errors
+            cardErrors.textContent = "";
+
+            // Toutes les validations ont réussi, procéder à la soumission
+            submitButton.disabled = true;
+            spinner.classList.remove("hidden");
+            buttonText.textContent = "Traitement en cours...";
+
+            let response = null;
+            try {
+                const formData = {
+                    room_id: parseInt(
+                        document.getElementById("modalRoomId").value
+                    ),
+                    check_in_date: document.getElementById("checkInDate").value,
+                    check_out_date:
+                        document.getElementById("checkOutDate").value,
+                    total_amount: parseFloat(
+                        document.getElementById("totalAmount").value
+                    ),
+                    user: parseInt(document.getElementById("userId").value),
+                };
+
+                response = await fetch("/create_reservation/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector(
+                            "[name=csrfmiddlewaretoken]"
+                        ).value,
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                let data = null;
+                let isJson = false;
+                try {
+                    data = await response.json();
+                    isJson = true;
+                } catch (e) { }
+
+                // Remove any previous alert
+                document
+                    .querySelectorAll(".alert-message")
+                    .forEach((a) => a.remove());
+
+                // Show success or error message
+                if (response.ok && isJson && data.success) {
+                    showAlert("Réservation effectuée avec succès!", "success");
+                    closeModal();
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showAlert("Chambre non disponible pour cette période", "error");
+                }
+            } catch (error) {
+                document
+                    .querySelectorAll(".alert-message")
+                    .forEach((a) => a.remove());
+                showAlert(
+                    "Une erreur est survenue lors de la réservation",
+                    "error"
+                );
+            } finally {
+                // Always reset the button state after the request, regardless of outcome
+                submitButton.disabled = false;
+                spinner.classList.add("hidden");
+                buttonText.textContent = "Payer et réserver";
+            }
+        });
+
+    // Fonction pour valider les champs de paiement
+    function validatePaymentFields() {
+        const cardErrors = document.getElementById("card-errors");
+        // Supprimer les espaces pour la validation du numéro de carte
+        const cardNumberWithSpaces = document.getElementById("cardNumber").value.trim();
+        const cardNumber = cardNumberWithSpaces.replace(/\s/g, "");
+        const cardExpiry = document.getElementById("cardExpiry").value.trim();
+        const cardCvc = document.getElementById("cardCvc").value.trim();
+
+        // Vérifier que le numéro de carte contient exactement 16 chiffres
+        if (!cardNumber || cardNumber.length !== 16 || !/^\d{16}$/.test(cardNumber)) {
+            cardErrors.textContent = "Le numéro de carte doit contenir exactement 16 chiffres.";
+            return false;
+        }
+        // Vérifier que la date d'expiration est au format MM/AA avec MM < 12 et AA <= 99
+        else if (!cardExpiry || !/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(cardExpiry)) {
+            cardErrors.textContent = "Format de date d'expiration invalide (MM/AA). Le mois doit être entre 01 et 12.";
+            return false;
+        }
+        // Vérifier que le CVC contient exactement 3 chiffres
+        else if (!cardCvc || !/^[0-9]{3}$/.test(cardCvc)) {
+            cardErrors.textContent = "Le CVC doit contenir exactement 3 chiffres.";
+            return false;
+        } else {
+            cardErrors.textContent = "";
+            return true;
+        }
+    }
+
+    // Ajouter des écouteurs d'événements pour les champs de paiement
+    document.addEventListener("DOMContentLoaded", function () {
+        // Format automatique pour la date d'expiration (MM/AA)
+        const cardExpiry = document.getElementById("cardExpiry");
+        if (cardExpiry) {
+            cardExpiry.addEventListener("input", function (e) {
+                let value = e.target.value.replace(/\D/g, "");
+                if (value.length > 2) {
+                    value = value.substring(0, 2) + "/" + value.substring(2, 4);
+                }
+                e.target.value = value;
+            });
+        }
+
+        // Validation en temps réel du numéro de carte
+        const cardNumber = document.getElementById("cardNumber");
+        if (cardNumber) {
+            cardNumber.addEventListener("input", function (e) {
+                // Supprimer tous les caractères non numériques
+                let value = e.target.value.replace(/\D/g, "");
+                // Limiter à 16 chiffres
+                value = value.substring(0, 16);
+                // Formater avec un espace tous les 4 chiffres
+                let formattedValue = "";
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formattedValue += " ";
+                    }
+                    formattedValue += value[i];
+                }
+                e.target.value = formattedValue;
+                validatePaymentFields();
+            });
+        }
+
+        // Validation en temps réel du CVC
+        const cardCvc = document.getElementById("cardCvc");
+        if (cardCvc) {
+            cardCvc.addEventListener("input", function (e) {
+                e.target.value = e.target.value.replace(/\D/g, "").substring(0, 4);
+                validatePaymentFields();
+            });
+        }
+    });
+
+    function showAlert(message, type) {
+        document.querySelectorAll(".alert-message").forEach((a) => a.remove());
+        const alert = document.createElement("div");
+        alert.className = "alert-message";
+        alert.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: ${type === "success"
+                ? "var(--success-color)"
+                : "var(--error-color)"
+            };
+            color: white;
+            border-radius: 4px;
+            z-index: 1100;
+            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        `;
+        alert.textContent = message;
+        document.body.appendChild(alert);
+        setTimeout(
+            () => {
+                alert.style.animation = "slideOut 0.5s ease-out forwards";
+                setTimeout(() => alert.remove(), 500);
+            },
+            type === "success" ? 2500 : 5000
+        );
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Add smooth scrolling for the explore button
+        document
+            .querySelector(".btn--discover")
+            .addEventListener("click", function (e) {
+                e.preventDefault();
+                document.querySelector("#roomsFilters").scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            });
+
+        // Price Range Slider
+        const minPriceInput = document.getElementById("minPrice");
+        const maxPriceInput = document.getElementById("maxPrice");
+        const minSlider = document.getElementById("priceFilterMin");
+        const maxSlider = document.getElementById("priceFilterMax");
+        const sliderFill = document.querySelector(".price-slider-fill");
+
+        // Function to update the price range slider
+        function updatePriceSlider() {
+            const minVal = parseInt(minSlider.value);
+            const maxVal = parseInt(maxSlider.value);
+
+            // Ensure min doesn't exceed max
+            if (minVal > maxVal) {
+                if (this === minSlider) {
+                    maxSlider.value = minVal;
+                    maxPriceInput.value = minVal;
+                } else {
+                    minSlider.value = maxVal;
+                    minPriceInput.value = maxVal;
+                }
+            }
+
+            // Calculate percentages for the fill
+            const minPercent =
+                ((minVal - minSlider.min) / (minSlider.max - minSlider.min)) *
+                100;
+            const maxPercent =
+                ((maxVal - minSlider.min) / (minSlider.max - minSlider.min)) *
+                100;
+
+            // Update the fill position
+            sliderFill.style.left = minPercent + "%";
+            sliderFill.style.width = maxPercent - minPercent + "%";
+
+            // Update input values
+            minPriceInput.value = minVal;
+            maxPriceInput.value = maxVal;
+        }
+
+        // Initialize slider position
+        updatePriceSlider();
+
+        // Event listeners for sliders
+        minSlider.addEventListener("input", updatePriceSlider);
+        maxSlider.addEventListener("input", updatePriceSlider);
+
+        // Event listeners for input fields
+        minPriceInput.addEventListener("change", function () {
+            minSlider.value = this.value;
+            updatePriceSlider();
+        });
+
+        maxPriceInput.addEventListener("change", function () {
+            maxSlider.value = this.value;
+            updatePriceSlider();
+        });
+
+        // Handle min/max boundaries
+        minPriceInput.addEventListener("blur", function () {
+            if (parseInt(this.value) < parseInt(this.min)) {
+                this.value = this.min;
+                minSlider.value = this.min;
+                updatePriceSlider();
+            }
+        });
+
+        maxPriceInput.addEventListener("blur", function () {
+            if (parseInt(this.value) > parseInt(this.max)) {
+                this.value = this.max;
+                maxSlider.value = this.max;
+                updatePriceSlider();
+            }
+        });
+
+        // Connect the capacity radio buttons to the hidden select
+        const capacityOptions = document.querySelectorAll(
+            ".capacity-option input"
+        );
+        const capacityFilter = document.getElementById("capacityFilter");
+
+        capacityOptions.forEach((option) => {
+            option.addEventListener("change", function () {
+                if (this.checked) {
+                    capacityFilter.value = this.value;
+                }
+            });
+        });
+
+        // Fonction de filtrage modifiée
+        function filterRooms() {
+            const roomType = document
+                .querySelector(".custom-select")
+                .value.trim();
+            const minPrice = parseInt(
+                document.getElementById("minPrice").value
+            );
+            const maxPrice = parseInt(
+                document.getElementById("maxPrice").value
+            );
+            const selectedCapacity = document.querySelector(
+                'input[name="capacity"]:checked'
+            ).value;
+
+            const rooms = document.querySelectorAll(".room-card");
+            let visibleCount = 0;
+
+            rooms.forEach((room) => {
+                const roomData = {
+                    type: room.dataset.type,
+                    price: parseFloat(room.dataset.price),
+                    capacity: parseInt(room.dataset.capacity),
+                };
+
+                // Amélioration de la comparaison des types de chambres
+                const matchesType =
+                    !roomType ||
+                    roomData.type
+                        .toLowerCase()
+                        .includes(roomType.toLowerCase());
+                const matchesPrice =
+                    roomData.price >= minPrice && roomData.price <= maxPrice;
+                const matchesCapacity =
+                    !selectedCapacity ||
+                    roomData.capacity >= parseInt(selectedCapacity);
+
+                if (matchesType && matchesPrice && matchesCapacity) {
+                    room.style.display = "";
+                    visibleCount++;
+
+                    // Ajouter une animation de fade in
+                    room.style.opacity = "0";
+                    setTimeout(() => {
+                        room.style.opacity = "1";
+                        room.style.transition = "opacity 0.3s ease-in-out";
+                    }, 50);
+                } else {
+                    room.style.display = "none";
+                }
+            });
+
+            handleNoResults(visibleCount);
+        }
+
+        // Gestion du message "Aucun résultat"
+        function handleNoResults(visibleCount) {
+            const roomsContainer = document.getElementById("roomsContainer");
+            const existingMessage = roomsContainer.querySelector(
+                ".no-results-message"
+            );
+
+            if (visibleCount === 0) {
+                if (!existingMessage) {
+                    const message = document.createElement("div");
+                    message.className = "no-results-message alert alert-info";
+                    message.style.cssText =
+                        "grid-column: 1/-1; text-align: center; padding: 2rem; margin-top: 2rem;";
+                    message.innerHTML = `
+                        <i class='bx bx-search' style='font-size: 2rem; margin-bottom: 1rem;'></i>
+                        <p>Aucune chambre ne correspond à vos critères de recherche.</p>
+                        <p style='font-size: 0.9rem; margin-top: 0.5rem;'>Essayez d'ajuster vos filtres pour voir plus de résultats.</p>
+                    `;
+                    roomsContainer.appendChild(message);
+                }
+            } else if (existingMessage) {
+                existingMessage.remove();
+            }
+        }
+
+        // Écouteurs d'événements pour les filtres
+        const applyFiltersButton = document.getElementById("applyFilters");
+        const roomTypeSelect = document.getElementById("roomTypeSelect");
+        if (applyFiltersButton) {
+            applyFiltersButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                this.classList.add("filter-button--active");
+                this.innerHTML =
+                    '<span class="visually-hidden">Filtrage en cours...</span>';
+
+                setTimeout(() => {
+                    filterRooms();
+                    this.classList.remove("filter-button--active");
+                    this.innerHTML =
+                        '<i class="bx bx-search-alt"></i><span>Découvrir</span>';
+                }, 500);
+            });
+        }
+
+        // Gestion du sélecteur de type de chambre personnalisé
+        const customDropdown = document.querySelector('.custom-dropdown');
+        const dropdownSelected = document.getElementById('roomTypeSelected');
+        const dropdownOptions = document.getElementById('roomTypeOptions');
+        const dropdownOptionsList = document.querySelectorAll('.dropdown-option');
+        const hiddenSelect = document.getElementById('roomTypeSelect');
+
+        // Ouvrir/fermer le menu déroulant
+        dropdownSelected.addEventListener('click', function () {
+            customDropdown.classList.toggle('active');
+        });
+
+        // Fermer le dropdown si on clique ailleurs sur la page
+        document.addEventListener('click', function (e) {
+            if (!customDropdown.contains(e.target)) {
+                customDropdown.classList.remove('active');
+            }
+        });
+
+        // Gérer la sélection des options
+        dropdownOptionsList.forEach(option => {
+            option.addEventListener('click', function () {
+                // Mettre à jour l'affichage du sélecteur
+                dropdownSelected.querySelector('span').textContent = this.textContent;
+
+                // Mettre à jour la sélection visuelle
+                dropdownOptionsList.forEach(opt => opt.setAttribute('data-selected', 'false'));
+                this.setAttribute('data-selected', 'true');
+
+                // Mettre à jour le select caché
+                hiddenSelect.value = this.getAttribute('data-value');
+
+                // Déclencher l'événement change pour le filtrage
+                const event = new Event('change');
+                hiddenSelect.dispatchEvent(event);
+
+                // Fermer le dropdown après la sélection
+                customDropdown.classList.remove('active');
+            });
+        });
+
+        // Initialisation du filtre
+        filterRooms();
+    });
+
+    function openModal(roomId, roomNumber, roomType, roomPrice) {
+        console.log("Room ID:", roomId); // Debug
+        document.getElementById("modalRoomId").value = roomId;
+        document.getElementById("modalRoomType").value = roomType;
+        document.getElementById("modalRoomNumber").value = roomNumber;
+        document.getElementById("modalRoomPrice").value = roomPrice;
+        document.getElementById("reservationModal").classList.add("active");
+
+        // Initialize date pickers when modal opens
+        initializeDatePickers(roomId);
+        validateDates(); // Validation initiale
+    }
+
+    function closeModal() {
+        document.getElementById("reservationModal").classList.remove("active");
+        document.getElementById("reservationForm").reset();
+        document.getElementById("totalPriceContainer").style.display = "none";
+    }
+
+    function calculateTotalPrice() {
+        const checkInDate = new Date(
+            document.getElementById("checkInDate").value
+        );
+        const checkOutDate = new Date(
+            document.getElementById("checkOutDate").value
+        );
+        const roomPrice = parseFloat(
+            document.getElementById("modalRoomPrice").value
+        );
+
+        if (
+            checkInDate &&
+            checkOutDate &&
+            !isNaN(roomPrice) &&
+            checkOutDate > checkInDate
+        ) {
+            const nights = Math.ceil(
+                (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
+            );
+            const totalPrice = nights * roomPrice;
+
+            document.getElementById("totalAmount").value = totalPrice;
+            document.getElementById("totalPrice").value =
+                totalPrice + "€ (pour " + nights + " nuits)";
+            document.getElementById("totalPriceContainer").style.display =
+                "block";
+        }
+    }
+
+    async function initializeDatePickers(roomId) {
+        try {
+            // Fetch available dates from backend
+            const response = await fetch(`/get-available-dates/${roomId}/`);
+            const data = await response.json();
+            const availableDates = new Set(data.available_dates);
+
+            const checkInDate = document.getElementById("checkInDate");
+            const checkOutDate = document.getElementById("checkOutDate");
+
+            function isDateAvailable(date) {
+                return availableDates.has(date.toISOString().split("T")[0]);
+            }
+
+            function updateDateStyle(input, date) {
+                if (date) {
+                    const available = isDateAvailable(date);
+                    input.classList.remove("valid-date", "invalid-date");
+                    input.classList.add(
+                        available ? "valid-date" : "invalid-date"
+                    );
+                }
+            }
+
+            // Event listeners for date inputs
+            checkInDate.addEventListener("change", function () {
+                const selectedDate = new Date(this.value);
+                updateDateStyle(this, selectedDate);
+
+                // Update checkout min date
+                checkOutDate.min = this.value;
+                calculateTotalPrice();
+            });
+
+            checkOutDate.addEventListener("change", function () {
+                const selectedDate = new Date(this.value);
+                updateDateStyle(this, selectedDate);
+                calculateTotalPrice();
+            });
+
+            // Initial setup
+            const today = new Date();
+            checkInDate.min = today.toISOString().split("T")[0];
+            updateDateStyle(checkInDate, today);
+        } catch (error) {
+            console.error("Error fetching available dates:", error);
+        }
+    }
+
+    // Initialiser les contrôles de date
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("checkInDate").min = today;
+    document.getElementById("checkOutDate").min = today;
+
+    document
+        .getElementById("checkInDate")
+        .addEventListener("change", function () {
+            document.getElementById("checkOutDate").min = this.value;
+            calculateTotalPrice();
+        });
+
+    document
+        .getElementById("checkOutDate")
+        .addEventListener("change", calculateTotalPrice);
+</script>
+{% endblock %}
